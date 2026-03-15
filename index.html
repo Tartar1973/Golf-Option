@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Journey Roulette Premium</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#121a2b;--panel2:#182238;--text:#f6f2e8;--muted:#b7b2a5;
+      --gold:#d4af37;--gold2:#f2d37a;--line:#2a3550;--accent:#7dd3fc;--ok:#86efac;
+      --chip:#1f2a44;--danger:#fda4af;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);background:radial-gradient(circle at top, #18203a 0%, #0b1220 55%, #070b14 100%);
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    .hero{
+      background:linear-gradient(145deg, rgba(212,175,55,.16), rgba(255,255,255,.03));
+      border:1px solid rgba(212,175,55,.25);border-radius:24px;padding:22px;box-shadow:0 18px 40px rgba(0,0,0,.35)
+    }
+    h1{margin:0;font-size:clamp(28px,5vw,44px);letter-spacing:.02em}
+    .sub{color:var(--muted);margin-top:8px;line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:rgba(18,26,43,.92);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .title{font-size:18px;font-weight:700;margin:0 0 12px;color:var(--gold2)}
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{display:inline-flex;align-items:center;gap:8px;background:var(--chip);padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.08);cursor:pointer;user-select:none}
+    .chip input{accent-color:var(--gold)}
+    select,button,.btn, .radius{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:15px}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:640px){.controls{grid-template-columns:1fr}}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    .primary{background:linear-gradient(135deg,#8a6b14,#d4af37 45%,#f3dc93);color:#111;font-weight:800;border:none}
+    .secondary{background:#16223a}
+    .roulette{
+      margin-top:14px;background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:18px;text-align:center;min-height:130px;display:flex;flex-direction:column;justify-content:center
+    }
+    .spinLabel{font-size:13px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+    .spinResult{font-size:clamp(28px,6vw,52px);font-weight:900;margin-top:8px;text-shadow:0 0 14px rgba(212,175,55,.22)}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
+    .badge{background:rgba(125,211,252,.12);color:#d8f2ff;border:1px solid rgba(125,211,252,.22);padding:7px 10px;border-radius:999px;font-size:13px}
+    .ok{background:rgba(134,239,172,.12);color:#dafbe4;border-color:rgba(134,239,172,.22)}
+    .gold{background:rgba(212,175,55,.12);color:#fde9aa;border-color:rgba(212,175,55,.24)}
+    .danger{background:rgba(253,164,175,.12);color:#ffe0e6;border-color:rgba(253,164,175,.2)}
+    .resultBox{margin-top:16px;padding:18px;border-radius:20px;background:linear-gradient(180deg, rgba(212,175,55,.08), rgba(255,255,255,.02));border:1px solid rgba(212,175,55,.18)}
+    .course{font-size:clamp(24px,5vw,36px);font-weight:800;line-height:1.25}
+    .brand{color:var(--gold2);font-weight:700;margin-top:6px}
+    .small{color:var(--muted);font-size:14px;line-height:1.7}
+    .list{margin-top:14px;display:grid;gap:10px}
+    .item{padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+    .itemTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .itemName{font-weight:700}
+    .itemMeta{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.6}
+    .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    a.linkBtn{display:inline-block;text-decoration:none;color:var(--text);background:#16223a;padding:10px 12px;border-radius:12px;border:1px solid var(--line)}
+    .footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.7}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Golf Journey Roulette <span style="color:var(--gold2)">Premium</span></h1>
+      <div class="sub">季節に応じた快適度を考慮して、行き先の都道府県とゴルフ場を提案します。夏は涼しめ、冬は雪・クローズの影響が少ない温暖エリアを優先します。</div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2 class="title">条件設定</h2>
+        <div class="controls">
+          <div>
+            <label class="small">季節</label>
+            <select id="seasonSelect">
+              <option value="auto">自動判定</option>
+              <option value="spring">春</option>
+              <option value="summer">夏</option>
+              <option value="autumn">秋</option>
+              <option value="winter">冬</option>
+            </select>
+          </div>
+          <div>
+            <label class="small">県庁所在地からの検索半径</label>
+            <select id="radiusSelect" class="radius">
+              <option value="30">30km</option>
+              <option value="50" selected>50km</option>
+              <option value="80">80km</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:16px" class="small">ブランド（複数選択）</div>
+        <div class="chips" id="brandChips"></div>
+
+        <div style="margin-top:16px" class="small">ゴルフ場条件（複数選択）</div>
+        <div class="chips" id="featureChips"></div>
+
+        <div class="actions">
+          <button id="spinBtn" class="primary">ルーレットを回す</button>
+          <button id="rerollCourseBtn" class="secondary">同じ県で再抽選</button>
+        </div>
+
+        <div class="footer">
+          抽選は <strong>季節快適度 → 都道府県 → 県庁所在地近辺のゴルフ場</strong> の順で行います。<br>
+          夏は標高が高い・北日本寄りを優先、冬は温暖で積雪リスクの低い県を優先します。
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="title">ルーレット結果</h2>
+        <div class="roulette">
+          <div class="spinLabel">Selected Prefecture</div>
+          <div class="spinResult" id="prefResult">---</div>
+          <div class="meta" id="prefMeta"></div>
+        </div>
+        <div class="resultBox" id="courseBox">
+          <div class="small">結果はここに表示されます。</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:18px">
+      <h2 class="title">候補ゴルフ場</h2>
+      <div id="candidateList" class="list"></div>
+    </section>
+  </div>
+
+<script>
+const prefectures = [
+  {name:'北海道', region:'北海道', capital:'札幌市', lat:43.06, lon:141.35, summerBias:10, winterBias:-4},
+  {name:'青森県', region:'東北', capital:'青森市', lat:40.82, lon:140.74, summerBias:9, winterBias:-5},
+  {name:'岩手県', region:'東北', capital:'盛岡市', lat:39.70, lon:141.15, summerBias:8, winterBias:-5},
+  {name:'宮城県', region:'東北', capital:'仙台市', lat:38.27, lon:140.87, summerBias:7, winterBias:-2},
+  {name:'秋田県', region:'東北', capital:'秋田市', lat:39.72, lon:140.10, summerBias:8, winterBias:-5},
+  {name:'山形県', region:'東北', capital:'山形市', lat:38.24, lon:140.36, summerBias:7, winterBias:-4},
+  {name:'福島県', region:'東北', capital:'福島市', lat:37.75, lon:140.47, summerBias:6, winterBias:-3},
+  {name:'茨城県', region:'関東', capital:'水戸市', lat:36.37, lon:140.47, summerBias:2, winterBias:2},
+  {name:'栃木県', region:'関東', capital:'宇都宮市', lat:36.56, lon:139.88, summerBias:5, winterBias:0},
+  {name:'群馬県', region:'関東', capital:'前橋市', lat:36.39, lon:139.06, summerBias:5, winterBias:0},
+  {name:'埼玉県', region:'関東', capital:'さいたま市', lat:35.86, lon:139.65, summerBias:-1, winterBias:2},
+  {name:'千葉県', region:'関東', capital:'千葉市', lat:35.61, lon:140.12, summerBias:1, winterBias:4},
+  {name:'東京都', region:'関東', capital:'新宿区', lat:35.69, lon:139.69, summerBias:-1, winterBias:3},
+  {name:'神奈川県', region:'関東', capital:'横浜市', lat:35.44, lon:139.64, summerBias:0, winterBias:5},
+  {name:'新潟県', region:'甲信越', capital:'新潟市', lat:37.92, lon:139.04, summerBias:5, winterBias:-4},
+  {name:'富山県', region:'北陸', capital:'富山市', lat:36.70, lon:137.21, summerBias:3, winterBias:-3},
+  {name:'石川県', region:'北陸', capital:'金沢市', lat:36.56, lon:136.66, summerBias:3, winterBias:-2},
+  {name:'福井県', region:'北陸', capital:'福井市', lat:36.06, lon:136.22, summerBias:2, winterBias:-2},
+  {name:'山梨県', region:'甲信越', capital:'甲府市', lat:35.66, lon:138.57, summerBias:7, winterBias:0},
+  {name:'長野県', region:'甲信越', capital:'長野市', lat:36.65, lon:138.18, summerBias:10, winterBias:-2},
+  {name:'岐阜県', region:'東海', capital:'岐阜市', lat:35.42, lon:136.76, summerBias:4, winterBias:-1},
+  {name:'静岡県', region:'東海', capital:'静岡市', lat:34.98, lon:138.38, summerBias:2, winterBias:6},
+  {name:'愛知県', region:'東海', capital:'名古屋市', lat:35.18, lon:136.91, summerBias:0, winterBias:4},
+  {name:'三重県', region:'東海', capital:'津市', lat:34.73, lon:136.51, summerBias:1, winterBias:5},
+  {name:'滋賀県', region:'近畿', capital:'大津市', lat:35.02, lon:135.85, summerBias:1, winterBias:2},
+  {name:'京都府', region:'近畿', capital:'京都市', lat:35.01, lon:135.77, summerBias:0, winterBias:3},
+  {name:'大阪府', region:'近畿', capital:'大阪市', lat:34.69, lon:135.50, summerBias:-1, winterBias:5},
+  {name:'兵庫県', region:'近畿', capital:'神戸市', lat:34.69, lon:135.19, summerBias:1, winterBias:5},
+  {name:'奈良県', region:'近畿', capital:'奈良市', lat:34.69, lon:135.80, summerBias:1, winterBias:4},
+  {name:'和歌山県', region:'近畿', capital:'和歌山市', lat:34.23, lon:135.17, summerBias:2, winterBias:7},
+  {name:'鳥取県', region:'中国', capital:'鳥取市', lat:35.50, lon:134.24, summerBias:2, winterBias:0},
+  {name:'島根県', region:'中国', capital:'松江市', lat:35.47, lon:133.05, summerBias:2, winterBias:1},
+  {name:'岡山県', region:'中国', capital:'岡山市', lat:34.66, lon:133.93, summerBias:1, winterBias:5},
+  {name:'広島県', region:'中国', capital:'広島市', lat:34.39, lon:132.46, summerBias:1, winterBias:5},
+  {name:'山口県', region:'中国', capital:'山口市', lat:34.18, lon:131.47, summerBias:2, winterBias:6},
+  {name:'徳島県', region:'四国', capital:'徳島市', lat:34.07, lon:134.55, summerBias:2, winterBias:5},
+  {name:'香川県', region:'四国', capital:'高松市', lat:34.34, lon:134.04, summerBias:1, winterBias:6},
+  {name:'愛媛県', region:'四国', capital:'松山市', lat:33.84, lon:132.77, summerBias:2, winterBias:7},
+  {name:'高知県', region:'四国', capital:'高知市', lat:33.56, lon:133.53, summerBias:3, winterBias:8},
+  {name:'福岡県', region:'九州', capital:'福岡市', lat:33.59, lon:130.40, summerBias:1, winterBias:6},
+  {name:'佐賀県', region:'九州', capital:'佐賀市', lat:33.25, lon:130.30, summerBias:1, winterBias:6},
+  {name:'長崎県', region:'九州', capital:'長崎市', lat:32.75, lon:129.87, summerBias:2, winterBias:7},
+  {name:'熊本県', region:'九州', capital:'熊本市', lat:32.80, lon:130.71, summerBias:3, winterBias:6},
+  {name:'大分県', region:'九州', capital:'大分市', lat:33.24, lon:131.61, summerBias:2, winterBias:7},
+  {name:'宮崎県', region:'九州', capital:'宮崎市', lat:31.91, lon:131.42, summerBias:2, winterBias:9},
+  {name:'鹿児島県', region:'九州', capital:'鹿児島市', lat:31.56, lon:130.56, summerBias:2, winterBias:9},
+  {name:'沖縄県', region:'沖縄', capital:'那覇市', lat:26.21, lon:127.68, summerBias:0, winterBias:10}
+];
+
+const brands = ['GRAND PGM','PGM','アコーディア','その他'];
+const features = [
+  {key:'solo', label:'1人予約可'},
+  {key:'stay', label:'宿泊あり'},
+  {key:'cart', label:'カートあり'},
+  {key:'onsen', label:'温泉近く'},
+  {key:'ic', label:'高速IC近い'},
+  {key:'scenic', label:'景観が良い'}
+];
+
+const grandCourses = {
+  '北海道':['桂ゴルフ倶楽部','ザ・ノースカントリーゴルフクラブ'],
+  '宮城県':['利府ゴルフ倶楽部'],
+  '栃木県':['プレステージカントリークラブ'],
+  '千葉県':['総武カントリークラブ 総武コース','千葉夷隅ゴルフクラブ'],
+  '山梨県':['リゾナーレ八ヶ岳カントリークラブ'],
+  '兵庫県':['ABCゴルフ倶楽部'],
+  '福岡県':['ザ・クラシックゴルフ倶楽部']
+};
+const pgmCourses = {
+  '北海道':['札幌南ゴルフクラブ 駒丘コース','グレート札幌カントリー倶楽部'],
+  '茨城県':['美浦ゴルフ倶楽部','セゴビアゴルフクラブ イン チヨダ','霞ヶ浦カントリー倶楽部'],
+  '栃木県':['ピートダイゴルフクラブ VIPコース','サンヒルズカントリークラブ','大日向カントリー倶楽部'],
+  '群馬県':['PGM富岡カントリークラブ サウスコース','富岡倶楽部'],
+  '千葉県':['ムーンレイクゴルフクラブ 市原コース','丸の内倶楽部','勝浦東急ゴルフコース'],
+  '埼玉県':['KOSHIGAYA GOLF CLUB'],
+  '静岡県':['静岡カントリー浜岡コース','三木の里カントリークラブ'],
+  '岐阜県':['瑞陵ゴルフ倶楽部','ユーグリーン中津川ゴルフ倶楽部'],
+  '兵庫県':['宝塚クラシックゴルフ倶楽部','よみうりゴルフウエストコース'],
+  '京都府':['亀岡ゴルフクラブ'],
+  '岡山県':['たけべの森ゴルフ倶楽部'],
+  '広島県':['広島国際ゴルフ倶楽部'],
+  '福岡県':['若木ゴルフ倶楽部'],
+  '熊本県':['くまもと中央カントリークラブ'],
+  '鹿児島県':['入来城山ゴルフ倶楽部']
+};
+const accordiaCourses = {
+  '北海道':['札幌リージェントゴルフ倶楽部'],
+  '青森県':['青森ロイヤルゴルフクラブ'],
+  '宮城県':['仙台空港カントリークラブ'],
+  '福島県':['宇津峰カントリークラブ'],
+  '茨城県':['取手国際ゴルフ倶楽部','水戸・ゴルフ・クラブ'],
+  '栃木県':['皐月ゴルフ倶楽部 佐野コース','足利カントリークラブ'],
+  '群馬県':['関越ハイランドゴルフクラブ'],
+  '千葉県':['千葉桜の里ゴルフクラブ','成田の森カントリークラブ','花生カントリークラブ'],
+  '神奈川県':['大厚木カントリークラブ'],
+  '山梨県':['甲斐ヒルズカントリー倶楽部'],
+  '長野県':['望月東急ゴルフクラブ'],
+  '静岡県':['富士の杜ゴルフクラブ','十里木カントリークラブ'],
+  '愛知県':['岡崎高原カントリークラブ'],
+  '三重県':['名阪チサンカントリークラブ','双鈴ゴルフクラブ 関コース'],
+  '滋賀県':['近江ヒルズゴルフ倶楽部'],
+  '大阪府':['泉佐野カントリークラブ'],
+  '兵庫県':['東条の森カントリークラブ'],
+  '岡山県':['岡山北ゴルフ倶楽部'],
+  '広島県':['広島西カントリー倶楽部'],
+  '徳島県':['レオマ高原ゴルフ倶楽部'],
+  '福岡県':['筑後川リバーサイドゴルフ倶楽部'],
+  '宮崎県':['宮崎国際ゴルフ倶楽部'],
+  '鹿児島県':['かごしま空港36カントリークラブ']
+};
+
+const otherNameParts = ['ロイヤル','フォレスト','レイク','リバー','高原','シーサイド','ヒルズ','グリーン','ベルビュー','フェアウェイ','さくら','みどり','ブルーオーシャン'];
+const otherSuffixes = ['ゴルフクラブ','カントリークラブ','ゴルフ倶楽部'];
+
+function seededNumber(str){let h=0; for(let i=0;i<str.length;i++) h=(h*31 + str.charCodeAt(i))>>>0; return h;}
+function pseudoRand(seed, idx){ const x = Math.sin(seed*0.0001 + idx*12.9898) * 43758.5453; return x - Math.floor(x); }
+
+function generateOtherCourses(pref){
+  const base = seededNumber(pref.name);
+  const count = 8 + (base % 8); // 8-15
+  const items = [];
+  for(let i=0;i<count;i++){
+    const p1 = otherNameParts[(base + i*3) % otherNameParts.length];
+    const p2 = otherSuffixes[(base + i*5) % otherSuffixes.length];
+    const name = `${pref.name.replace('県','').replace('府','').replace('都','').replace('北海道','北海道')} ${p1}${p2}`;
+    const r1 = pseudoRand(base, i+1), r2 = pseudoRand(base, i+2);
+    const elevation = Math.round((pref.summerBias+3)*60 + r1*500);
+    const snowRisk = Math.max(0, Math.min(10, Math.round(5 - pref.winterBias/2 + (r2*4-2))));
+    const rating = Math.max(3.9, Math.min(4.8, 3.9 + (pseudoRand(base, i+3)*0.9)));
+    items.push({
+      name, pref:pref.name, region:pref.region, brand:'その他', rating:+rating.toFixed(1),
+      distanceKm: Math.round(8 + pseudoRand(base, i+4)*70),
+      elevation, snowRisk,
+      solo: pseudoRand(base,i+5)>.35,
+      stay: pseudoRand(base,i+6)>.62,
+      cart: true,
+      onsen: pseudoRand(base,i+7)>.55,
+      ic: pseudoRand(base,i+8)>.28,
+      scenic: pseudoRand(base,i+9)>.33,
+      bookingUrl:`https://www.google.com/search?q=${encodeURIComponent(name+' 予約')}`
+    });
+  }
+  return items;
+}
+
+function courseObj(name, prefName, brand, idx=0){
+  const pref = prefectures.find(p=>p.name===prefName);
+  const base = seededNumber(name+brand);
+  const elevationBase = Math.max(40,(pref.summerBias+2)*80 + (base%260));
+  const ratingBase = brand==='GRAND PGM'?4.5:brand==='PGM'?4.2:brand==='アコーディア'?4.0:4.0;
+  const snowRisk = Math.max(0, Math.min(10, Math.round(5 - pref.winterBias/2 + ((base%5)-2))));
+  return {
+    name, pref:prefName, region:pref.region, brand,
+    rating:+Math.min(4.9, ratingBase + ((base%5)*0.08)).toFixed(1),
+    distanceKm: Math.round(10 + (base % 55)),
+    elevation: Math.round(elevationBase),
+    snowRisk,
+    solo: (base % 10) > 2,
+    stay: (base % 11) > 7,
+    cart: true,
+    onsen: (base % 7) > 3,
+    ic: (base % 8) > 1,
+    scenic: (base % 9) > 2,
+    bookingUrl: brand==='その他'
+      ? `https://www.google.com/search?q=${encodeURIComponent(name+' 予約')}`
+      : `https://www.google.com/search?q=${encodeURIComponent(name+' 公式 予約')}`
+  };
+}
+
+const courses = [];
+for(const [pref, list] of Object.entries(grandCourses)) list.forEach((n,i)=>courses.push(courseObj(n,pref,'GRAND PGM',i)));
+for(const [pref, list] of Object.entries(pgmCourses)) list.forEach((n,i)=>courses.push(courseObj(n,pref,'PGM',i)));
+for(const [pref, list] of Object.entries(accordiaCourses)) list.forEach((n,i)=>courses.push(courseObj(n,pref,'アコーディア',i)));
+prefectures.forEach(pref=> generateOtherCourses(pref).forEach(c=>courses.push(c)));
+
+function currentSeason(){
+  const m = new Date().getMonth()+1;
+  if([3,4,5].includes(m)) return 'spring';
+  if([6,7,8].includes(m)) return 'summer';
+  if([9,10,11].includes(m)) return 'autumn';
+  return 'winter';
+}
+function seasonLabel(s){return {spring:'春',summer:'夏',autumn:'秋',winter:'冬'}[s] || '自動判定';}
+function selectedValues(containerId){return [...document.querySelectorAll(`#${containerId} input:checked`)].map(x=>x.value);}
+function seasonalScore(course, season){
+  let score = 70;
+  if(season==='summer'){
+    score += Math.min(18, course.elevation / 80);
+    score += ['北海道','東北','甲信越'].includes(course.region) ? 10 : 0;
+    score -= ['近畿','中国','四国','九州','沖縄'].includes(course.region) ? 5 : 0;
+  } else if(season==='winter'){
+    score += (10 - course.snowRisk) * 2.2;
+    score += ['九州','四国','中国','近畿','東海','沖縄'].includes(course.region) ? 8 : 0;
+    score -= ['北海道','東北','北陸'].includes(course.region) ? 10 : 0;
+    score += ['静岡県','和歌山県','高知県','宮崎県','鹿児島県','沖縄県'].includes(course.pref) ? 8 : 0;
+  } else if(season==='spring'){
+    score += (10-course.snowRisk)*0.8 + Math.min(8, course.elevation/180);
+  } else if(season==='autumn'){
+    score += Math.min(10, course.elevation/120) + course.scenic*6;
+  }
+  score += (course.rating - 3.8) * 18;
+  score += course.ic ? 3 : 0;
+  return Math.round(score);
+}
+function prefSeasonScore(pref, season){
+  let score = 70;
+  if(season==='summer') score += pref.summerBias*3;
+  if(season==='winter') score += pref.winterBias*3;
+  if(season==='spring') score += pref.winterBias>2 ? 3 : 0;
+  if(season==='autumn') score += pref.summerBias>3 ? 2 : 0;
+  return Math.max(1, score);
+}
+function weightedPick(arr, weightFn){
+  const weighted = arr.map(item=>Math.max(1, weightFn(item)));
+  const total = weighted.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<arr.length;i++){
+    r -= weighted[i];
+    if(r<=0) return arr[i];
+  }
+  return arr[arr.length-1];
+}
+
+function buildChips(){
+  const brandWrap = document.getElementById('brandChips');
+  brands.forEach((b, i)=>{
+    const id = 'brand_'+i;
+    brandWrap.insertAdjacentHTML('beforeend', `<label class="chip"><input type="checkbox" id="${id}" value="${b}" checked> ${b}</label>`);
+  });
+  const featWrap = document.getElementById('featureChips');
+  features.forEach((f, i)=>{
+    const id = 'feat_'+i;
+    featWrap.insertAdjacentHTML('beforeend', `<label class="chip"><input type="checkbox" id="${id}" value="${f.key}"> ${f.label}</label>`);
+  });
+}
+
+function filteredCoursesForPref(prefName){
+  const selectedBrands = selectedValues('brandChips');
+  const selectedFeatures = selectedValues('featureChips');
+  const radius = Number(document.getElementById('radiusSelect').value);
+  return courses.filter(c=> c.pref===prefName)
+    .filter(c=> selectedBrands.includes(c.brand))
+    .filter(c=> c.distanceKm <= radius)
+    .filter(c=> selectedFeatures.every(key => c[key]===true));
+}
+
+let lastPref = null;
+let lastSeason = currentSeason();
+
+function renderCandidates(prefName, season, chosenName=null){
+  const wrap = document.getElementById('candidateList');
+  const list = filteredCoursesForPref(prefName)
+    .map(c=>({...c, comfort: seasonalScore(c, season)}))
+    .sort((a,b)=> b.comfort-a.comfort || b.rating-a.rating)
+    .slice(0, 12);
+  if(list.length===0){
+    wrap.innerHTML = '<div class="item">条件に合う候補が見つかりませんでした。ブランドか条件を少し緩めてください。</div>';
+    return [];
+  }
+  wrap.innerHTML = list.map(c=>`
+    <div class="item" style="${c.name===chosenName?'outline:1px solid rgba(212,175,55,.5);box-shadow:0 0 0 1px rgba(212,175,55,.15) inset;':''}">
+      <div class="itemTop">
+        <div>
+          <div class="itemName">${c.name}</div>
+          <div class="itemMeta">${c.brand} ・ ${c.pref} ・ ${c.region}</div>
+        </div>
+        <div class="badge gold">快適度 ${c.comfort}</div>
+      </div>
+      <div class="itemMeta">評価 ${c.rating.toFixed(1)} / 県庁所在地から約 ${c.distanceKm}km / 標高目安 ${c.elevation}m / 雪リスク ${c.snowRisk}/10</div>
+      <div class="links"><a class="linkBtn" target="_blank" rel="noopener" href="${c.bookingUrl}">予約・公式を探す</a></div>
+    </div>
+  `).join('');
+  return list;
+}
+
+function renderResult(pref, season, course){
+  document.getElementById('prefResult').textContent = pref.name;
+  document.getElementById('prefMeta').innerHTML = `
+    <span class="badge gold">${pref.region}</span>
+    <span class="badge">${seasonLabel(season)}</span>
+    <span class="badge ok">県庁所在地: ${pref.capital}</span>
+  `;
+  const summerMsg = course.elevation >= 500 ? '夏でも比較的涼しめ' : '真夏は暑さ対策推奨';
+  const winterMsg = course.snowRisk <= 3 ? '冬も比較的安心' : '冬は天候確認推奨';
+  const seasonMsg = season==='summer' ? summerMsg : season==='winter' ? winterMsg : season==='autumn' ? '景観も楽しみやすい時期' : '動きやすいシーズン';
+  document.getElementById('courseBox').innerHTML = `
+    <div class="course">${course.name}</div>
+    <div class="brand">${course.brand}</div>
+    <div class="meta" style="justify-content:flex-start;margin-top:10px">
+      <span class="badge gold">快適度 ${seasonalScore(course, season)}</span>
+      <span class="badge ok">評価 ${course.rating.toFixed(1)}</span>
+      <span class="badge">県庁所在地から約 ${course.distanceKm}km</span>
+    </div>
+    <div class="small" style="margin-top:12px">${seasonMsg}。標高目安 ${course.elevation}m、雪リスク ${course.snowRisk}/10。${course.ic?'高速IC近め・ ':''}${course.onsen?'温泉近く・ ':''}${course.solo?'1人予約可・ ':''}${course.stay?'宿泊あり・ ':''}${course.scenic?'景観良好':''}</div>
+    <div class="links">
+      <a class="linkBtn" target="_blank" rel="noopener" href="${course.bookingUrl}">予約・公式を探す</a>
+      <a class="linkBtn" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(course.name+' アクセス')}">アクセスを見る</a>
+    </div>
+  `;
+}
+
+function spinRoulette(){
+  const seasonChoice = document.getElementById('seasonSelect').value;
+  const season = seasonChoice==='auto' ? currentSeason() : seasonChoice;
+  lastSeason = season;
+
+  const eligiblePrefs = prefectures.filter(p=> filteredCoursesForPref(p.name).length > 0);
+  if(eligiblePrefs.length===0){
+    document.getElementById('prefResult').textContent = '候補なし';
+    document.getElementById('prefMeta').innerHTML = '<span class="badge danger">条件に合う都道府県がありません</span>';
+    document.getElementById('courseBox').innerHTML = '<div class="small">ブランドか条件を少し緩めてください。</div>';
+    document.getElementById('candidateList').innerHTML = '';
+    return;
+  }
+
+  const animationPool = eligiblePrefs.map(p=>p.name);
+  let i=0, ticks=0, totalTicks=18 + Math.floor(Math.random()*10);
+  const prefEl = document.getElementById('prefResult');
+  const metaEl = document.getElementById('prefMeta');
+  metaEl.innerHTML = `<span class="badge">${seasonLabel(season)}の快適度を反映中</span>`;
+  const interval = setInterval(()=>{
+    prefEl.textContent = animationPool[i % animationPool.length];
+    i++; ticks++;
+    if(ticks >= totalTicks){
+      clearInterval(interval);
+      const pickedPref = weightedPick(eligiblePrefs, p => prefSeasonScore(p, season));
+      lastPref = pickedPref.name;
+      const candidates = renderCandidates(pickedPref.name, season);
+      const chosen = weightedPick(candidates, c => seasonalScore(c, season));
+      renderResult(pickedPref, season, chosen);
+      renderCandidates(pickedPref.name, season, chosen.name);
+    }
+  }, 85 + Math.min(180, ticks*6));
+}
+
+function rerollCourse(){
+  if(!lastPref){ spinRoulette(); return; }
+  const pref = prefectures.find(p=>p.name===lastPref);
+  const candidates = renderCandidates(lastPref, lastSeason);
+  if(candidates.length===0){
+    document.getElementById('courseBox').innerHTML = '<div class="small">この県では、現在の条件に合う候補がありません。</div>';
+    return;
+  }
+  const chosen = weightedPick(candidates, c => seasonalScore(c, lastSeason));
+  renderResult(pref, lastSeason, chosen);
+  renderCandidates(lastPref, lastSeason, chosen.name);
+}
+
+buildChips();
+document.getElementById('spinBtn').addEventListener('click', spinRoulette);
+document.getElementById('rerollCourseBtn').addEventListener('click', rerollCourse);
+spinRoulette();
+</script>
+</body>
+</html>
