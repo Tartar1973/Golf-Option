@@ -1,17 +1,32 @@
-# Golf Journey Roulette Premium v4
+# Golf Journey Roulette - Secure Rakuten API Edition
 
-更新内容:
-- 「その他」の基準を 3.8 以上に調整
-- 実在コースを優先表示
-- 県ごとに「その他」が 5 件未満のときは、県別の 3.8 以上検索リンク候補で 5 件まで補完
-- ゴルフ場名の下に公式サイトリンクを表示
+この版は **APIキーをブラウザに埋め込まず**、Vercel Functions で楽天GORA APIを呼ぶ安全版です。
 
 ## ファイル
 - index.html
+- api/search.js
 - vercel.json
 - README.md
 
-## 補足
-この版は、実在コース名の正確性を優先しています。
-ただし全国 47 都道府県すべてで「その他」を実在コース名 5 件ずつ完全収録した版ではありません。
-不足する県は、GDO / 楽天GORA などの県別検索導線で補完しています。
+## Vercel に設定する環境変数
+Project Settings → Environment Variables に次を設定してください。
+
+- `RAKUTEN_APPLICATION_ID`
+- `RAKUTEN_ACCESS_KEY`
+- `RAKUTEN_AFFILIATE_ID`
+
+## 使い方
+1. このフォルダを GitHub にアップ
+2. Vercel で Import
+3. 上の3つの環境変数を Vercel に登録
+4. 再デプロイ
+5. 公開URLを開く
+
+## ポイント
+- APIキーは `api/search.js` のサーバー側だけで使います
+- ブラウザのページソースにはキーは出ません
+- 候補のゴルフ場名、評価、詳細URL、予約URLは楽天GORA APIから取得します
+
+## 注意
+- ブランド判定は公式一覧ベースの名前一致です
+- `その他` は評価3.8以上だけ残すようにしています

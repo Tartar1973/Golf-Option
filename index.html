@@ -3,512 +3,223 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Golf Journey Roulette Premium</title>
+  <title>Golf Journey Roulette - Secure Rakuten API Edition</title>
   <style>
-    :root {
-      --bg: #0b1220;
-      --panel: rgba(17, 24, 39, 0.9);
-      --panel-2: rgba(15, 23, 42, 0.95);
-      --line: rgba(255,255,255,0.12);
-      --text: #eef2ff;
-      --muted: #a5b4cc;
-      --gold: #d4af37;
-      --gold-2: #f6e27a;
-      --green: #22c55e;
-      --red: #f87171;
-      --blue: #60a5fa;
-      --chip: rgba(255,255,255,0.07);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(212,175,55,0.10), transparent 30%),
-        linear-gradient(180deg, #08101d 0%, #0b1220 45%, #111827 100%);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .hero { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
-    .hero h1 { margin:0; font-size: clamp(28px, 4vw, 42px); font-weight:800; background: linear-gradient(90deg, #fff, var(--gold-2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    .hero p { margin:6px 0 0; color:var(--muted); }
-    .grid { display:grid; grid-template-columns:360px 1fr; gap:18px; }
-    .panel { background: var(--panel); border: 1px solid var(--line); border-radius:24px; padding:18px; backdrop-filter:blur(12px); box-shadow:0 10px 40px rgba(0,0,0,0.25); }
-    .panel h2,.panel h3 { margin:0 0 12px; }
-    .section { margin-bottom:18px; }
-    label.title { display:block; font-size:13px; color:var(--gold-2); margin-bottom:8px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
-    select,button{font:inherit;}
-    select { width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:var(--panel-2); color:var(--text); outline:none; }
-    .chips{display:flex; flex-wrap:wrap; gap:8px;}
-    .chip{display:inline-flex; align-items:center; gap:8px; padding:9px 12px; border-radius:999px; background:var(--chip); border:1px solid var(--line); cursor:pointer; user-select:none; font-size:14px; color:var(--text);}
-    .chip input{display:none;}
-    .chip.active{border-color:rgba(212,175,55,0.5); background:rgba(212,175,55,0.16); box-shadow: inset 0 0 0 1px rgba(212,175,55,0.15);}
-    .actions{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-    .btn{border:none; border-radius:16px; padding:14px 16px; font-weight:800; cursor:pointer; transition:transform .15s ease, opacity .15s ease;}
-    .btn:hover{transform:translateY(-1px);} .btn:active{transform:translateY(0);} 
-    .btn-primary{background:linear-gradient(135deg, var(--gold), var(--gold-2)); color:#241700;}
-    .btn-secondary{background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--line);}
-    .stage{display:grid; gap:18px;}
-    .roulette-card{background:linear-gradient(180deg, rgba(17,24,39,0.98), rgba(11,18,32,0.98)); border:1px solid rgba(212,175,55,0.2); border-radius:28px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);}
-    .roulette-wrap{position:relative; overflow:hidden; height:240px; border-radius:22px; border:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));}
-    .pointer-line{position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); height:72px; border-top:2px solid rgba(212,175,55,0.85); border-bottom:2px solid rgba(212,175,55,0.85); background:linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent); z-index:2; pointer-events:none;}
-    .pointer-badge{position:absolute; right:16px; top:50%; transform:translateY(-50%); z-index:3; background:linear-gradient(135deg, var(--gold), var(--gold-2)); color:#291b00; font-weight:900; font-size:12px; padding:8px 12px; border-radius:999px; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
-    .ticker{position:absolute; left:0; right:0; top:0; will-change:transform; z-index:1;}
-    .ticker-item{height:72px; display:flex; align-items:center; justify-content:center; font-size: clamp(24px, 3vw, 34px); font-weight:900; letter-spacing:0.03em; border-bottom:1px solid rgba(255,255,255,0.04); color:#e8ecff; text-shadow:0 4px 14px rgba(0,0,0,0.35);}
-    .ticker-item:nth-child(odd){background:rgba(255,255,255,0.02);}
-    .subline{margin-top:12px; color:var(--muted); display:flex; flex-wrap:wrap; gap:10px; font-size:14px;}
-    .pill{display:inline-block; border-radius:999px; padding:8px 12px; background:rgba(255,255,255,0.06); border:1px solid var(--line); color:var(--text); font-size:13px;}
-    .result-card{display:grid; gap:16px; grid-template-columns:1.1fr .9fr;}
-    .winner{padding:20px; border-radius:24px; background:linear-gradient(180deg, rgba(212,175,55,0.12), rgba(212,175,55,0.05)); border:1px solid rgba(212,175,55,0.25);}
-    .winner .kicker{color:var(--gold-2); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;}
-    .winner .pref{font-size:40px; font-weight:900; margin-bottom:8px;}
-    .winner .course{font-size:26px; font-weight:800; line-height:1.3; margin-bottom:10px;}
-    .site-line{margin:4px 0 12px; font-size:14px;}
-    .site-line a{color:#9ed0ff;}
-    .meta{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
-    .meta .pill.brand{border-color:rgba(96,165,250,0.4);} .meta .pill.score{border-color:rgba(34,197,94,0.4);} .meta .pill.dist{border-color:rgba(248,113,113,0.35);}
-    .links{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;}
-    .linkbtn{text-decoration:none; color:var(--text); padding:11px 14px; border-radius:14px; background:rgba(255,255,255,0.08); border:1px solid var(--line); font-weight:700;}
-    .linkbtn.primary{background:linear-gradient(135deg, #1f6feb, #60a5fa); border:none;}
-    .candidate-list{padding:16px; border-radius:24px; background:rgba(255,255,255,0.03); border:1px solid var(--line); max-height:420px; overflow:auto;}
-    .candidate-item{padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);} .candidate-item:last-child{border-bottom:none;}
-    .candidate-top{display:flex; justify-content:space-between; gap:12px; align-items:start; margin-bottom:6px;}
-    .candidate-name{font-weight:800; line-height:1.35;}
-    .candidate-sub{color:var(--muted); font-size:13px;}
-    .candidate-sub a{color:#9ed0ff;}
-    .empty{padding:20px; border-radius:18px; background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.25); color:#fecaca;}
-    .note{color:var(--muted); font-size:12px; margin-top:10px;}
-    @media (max-width:980px){ .grid,.result-card{grid-template-columns:1fr;} .wrap{padding:14px;} .roulette-card{padding:16px;} .roulette-wrap{height:216px;} .ticker-item{font-size:26px;} }
+    :root{--bg:#0b1220;--panel:rgba(17,24,39,.92);--line:rgba(255,255,255,.12);--text:#eef2ff;--muted:#a5b4cc;--gold:#d4af37;--gold2:#f6e27a}
+    *{box-sizing:border-box}
+    body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:radial-gradient(circle at top, rgba(212,175,55,.10), transparent 30%),linear-gradient(180deg,#08101d 0%,#0b1220 48%,#111827 100%);min-height:100vh}
+    .wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+    h1{margin:0;font-size:clamp(28px,4vw,40px);font-weight:900;background:linear-gradient(90deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);line-height:1.6;margin-top:6px}
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:18px}
+    .panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px;backdrop-filter:blur(12px);box-shadow:0 16px 48px rgba(0,0,0,.22)}
+    .sec{margin-bottom:16px}.ttl{display:block;color:var(--gold2);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+    select,button{font:inherit}
+    select{width:100%;padding:12px 14px;border-radius:14px;background:#111827;color:var(--text);border:1px solid var(--line);outline:none}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);cursor:pointer;user-select:none;font-size:14px}
+    .chip.active{background:rgba(212,175,55,.16);border-color:rgba(212,175,55,.45)}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:none;border-radius:16px;padding:14px 16px;font-weight:900;cursor:pointer}
+    .primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#241700}.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line)}
+    .roulette{position:relative;overflow:hidden;height:240px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01))}
+    .ticker{position:absolute;left:0;right:0;top:0;will-change:transform}
+    .item{height:72px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(24px,3vw,34px);border-bottom:1px solid rgba(255,255,255,.04)}
+    .item:nth-child(odd){background:rgba(255,255,255,.02)}
+    .pointer{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:72px;border-top:2px solid rgba(212,175,55,.86);border-bottom:2px solid rgba(212,175,55,.86);background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),transparent);pointer-events:none}
+    .pointer-badge{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:2;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#291b00;font-size:12px;font-weight:900;padding:8px 12px;border-radius:999px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.pill{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);font-size:13px}
+    .layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.winner .kicker{color:var(--gold2);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .winner .pref{font-size:40px;font-weight:900;margin:6px 0}.winner .course{font-size:26px;font-weight:900;line-height:1.35;margin:6px 0 8px}.winner .desc{color:var(--muted);line-height:1.6}
+    .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.links a{padding:11px 14px;border-radius:14px;text-decoration:none;color:var(--text);border:1px solid var(--line);background:rgba(255,255,255,.08);font-weight:700}.links a.pri{background:linear-gradient(135deg,#1f6feb,#60a5fa);border:none}
+    .list{max-height:560px;overflow:auto}.row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}.row:last-child{border-bottom:none}.name{font-weight:800;line-height:1.35}.subline{color:var(--muted);font-size:13px;margin-top:5px;line-height:1.55}
+    .warn{padding:14px;border-radius:16px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25)} .error{padding:14px;border-radius:16px;background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.28);color:#fecaca} .ok{padding:14px;border-radius:16px;background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.28);color:#dcfce7}
+    @media (max-width: 980px){.grid,.layout{grid-template-columns:1fr}.roulette{height:216px}.wrap{padding:14px}}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <div>
-        <h1>Golf Journey Roulette</h1>
-        <p>季節快適度 × エリア × ブランド × 条件で、今行きたいゴルフ旅先を決める</p>
-      </div>
-      <div class="pill">実在コース中心 / 地図なし / 都道府県ルーレット</div>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Golf Journey Roulette</h1>
+      <div class="sub">Vercelのサーバー側で楽天GORA APIを呼ぶ安全版。<br>ブラウザには API キーを置きません。</div>
     </div>
-    <div class="grid">
-      <div class="panel">
-        <div class="section">
-          <label class="title" for="seasonSelect">Season</label>
-          <select id="seasonSelect">
-            <option value="auto">自動判定</option>
-            <option value="spring">春</option>
-            <option value="summer">夏</option>
-            <option value="autumn">秋</option>
-            <option value="winter">冬</option>
-          </select>
-        </div>
-        <div class="section">
-          <label class="title" for="areaSelect">Area</label>
-          <select id="areaSelect">
-            <option value="all">全国</option>
-            <option value="hokkaido_tohoku">北海道・東北</option>
-            <option value="kanto">関東</option>
-            <option value="chubu">中部</option>
-            <option value="kinki">近畿</option>
-            <option value="chugoku">中国</option>
-            <option value="shikoku">四国</option>
-            <option value="kyushu">九州</option>
-            <option value="okinawa">沖縄</option>
-          </select>
-        </div>
-        <div class="section">
-          <label class="title">Brand</label>
-          <div class="chips" id="brandChips"></div>
-        </div>
-        <div class="section">
-          <label class="title">Course Conditions</label>
-          <div class="chips" id="conditionChips"></div>
-        </div>
-        <div class="actions">
-          <button class="btn btn-primary" id="spinBtn">ルーレット開始</button>
-          <button class="btn btn-secondary" id="rerollBtn">同じ県で再抽選</button>
-        </div>
-        <div class="note">※ 「その他」は評価3.8以上の実在コース優先。県ごとに5件未満のときは検索リンク候補で5件まで補完します。</div>
+    <div class="pill">Secure Server-side Edition</div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="sec">
+        <label class="ttl" for="season">Season</label>
+        <select id="season">
+          <option value="auto">自動判定</option>
+          <option value="spring">春</option>
+          <option value="summer">夏</option>
+          <option value="autumn">秋</option>
+          <option value="winter">冬</option>
+        </select>
       </div>
-      <div class="stage">
-        <div class="roulette-card">
-          <h2 style="margin-top:0;">都道府県ルーレット</h2>
-          <div class="roulette-wrap">
-            <div class="pointer-line"></div>
-            <div class="pointer-badge">ここで決定</div>
-            <div class="ticker" id="ticker"></div>
-          </div>
-          <div class="subline">
-            <span class="pill" id="seasonLabel">季節: -</span>
-            <span class="pill" id="areaLabel">エリア: 全国</span>
-            <span class="pill" id="statusLabel">待機中</span>
-          </div>
+
+      <div class="sec">
+        <label class="ttl" for="area">Area</label>
+        <select id="area">
+          <option value="all">全国</option>
+          <option value="hokkaido">北海道</option>
+          <option value="tohoku">東北</option>
+          <option value="kanto">関東</option>
+          <option value="chubu">中部</option>
+          <option value="kinki">近畿</option>
+          <option value="chugoku">中国</option>
+          <option value="shikoku">四国</option>
+          <option value="kyushu">九州</option>
+          <option value="okinawa">沖縄</option>
+        </select>
+      </div>
+
+      <div class="sec">
+        <label class="ttl">Brand</label>
+        <div class="chips" id="brandChips"></div>
+      </div>
+
+      <div class="sec">
+        <label class="ttl">Conditions</label>
+        <div class="chips" id="condChips"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="spinBtn">ルーレット開始</button>
+        <button class="btn secondary" id="rerollBtn">同じ県で再抽選</button>
+      </div>
+
+      <div id="statusBox" class="warn" style="margin-top:14px">
+        <div>この版は <code>/api/search</code> を経由して楽天GORA APIを呼びます。Vercel に環境変数を設定してから使ってください。</div>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:18px">
+      <div class="card">
+        <h2 style="margin-top:0">都道府県ルーレット</h2>
+        <div class="roulette">
+          <div class="pointer"></div>
+          <div class="pointer-badge">ここで決定</div>
+          <div class="ticker" id="ticker"></div>
         </div>
-        <div class="result-card">
-          <div class="winner" id="winnerBox">
-            <div class="kicker">Result</div>
-            <div class="pref">-</div>
-            <div class="course">まだ結果がありません</div>
-            <div class="site-line" id="winnerSite"></div>
-            <div class="meta" id="winnerMeta"></div>
-            <div id="winnerText" class="candidate-sub">ルーレットを回してください。</div>
-            <div class="links" id="winnerLinks"></div>
-          </div>
-          <div class="candidate-list">
-            <h3 style="margin-top:0;">候補一覧</h3>
-            <div id="candidateList"></div>
-          </div>
+        <div class="meta">
+          <span class="pill" id="seasonLabel">季節: -</span>
+          <span class="pill" id="areaLabel">エリア: 全国</span>
+          <span class="pill" id="statusLabel">待機中</span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="card winner">
+          <div class="kicker">Result</div>
+          <div class="pref" id="winPref">-</div>
+          <div class="course" id="winCourse">まだ結果がありません</div>
+          <div class="desc" id="winDesc">ルーレットを回してください。</div>
+          <div class="meta" id="winMeta"></div>
+          <div class="links" id="winLinks"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">候補一覧</h3>
+          <div class="list" id="candidateList"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
+
 <script>
-const PREFS = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'];
-const AREAS = {all:PREFS, hokkaido_tohoku:['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県'], kanto:['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'], chubu:['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県'], kinki:['三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'], chugoku:['鳥取県','島根県','岡山県','広島県','山口県'], shikoku:['徳島県','香川県','愛媛県','高知県'], kyushu:['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県'], okinawa:['沖縄県']};
-const PREF_CAPITALS = {'北海道':'札幌市','青森県':'青森市','岩手県':'盛岡市','宮城県':'仙台市','秋田県':'秋田市','山形県':'山形市','福島県':'福島市','茨城県':'水戸市','栃木県':'宇都宮市','群馬県':'前橋市','埼玉県':'さいたま市','千葉県':'千葉市','東京都':'新宿区','神奈川県':'横浜市','新潟県':'新潟市','富山県':'富山市','石川県':'金沢市','福井県':'福井市','山梨県':'甲府市','長野県':'長野市','岐阜県':'岐阜市','静岡県':'静岡市','愛知県':'名古屋市','三重県':'津市','滋賀県':'大津市','京都府':'京都市','大阪府':'大阪市','兵庫県':'神戸市','奈良県':'奈良市','和歌山県':'和歌山市','鳥取県':'鳥取市','島根県':'松江市','岡山県':'岡山市','広島県':'広島市','山口県':'山口市','徳島県':'徳島市','香川県':'高松市','愛媛県':'松山市','高知県':'高知市','福岡県':'福岡市','佐賀県':'佐賀市','長崎県':'長崎市','熊本県':'熊本市','大分県':'大分市','宮崎県':'宮崎市','鹿児島県':'鹿児島市','沖縄県':'那覇市'};
+const AREA_LABELS = {all:'全国', hokkaido:'北海道', tohoku:'東北', kanto:'関東', chubu:'中部', kinki:'近畿', chugoku:'中国', shikoku:'四国', kyushu:'九州', okinawa:'沖縄'};
+const PREF_CODES = {'北海道':1,'青森県':2,'岩手県':3,'宮城県':4,'秋田県':5,'山形県':6,'福島県':7,'茨城県':8,'栃木県':9,'群馬県':10,'埼玉県':11,'千葉県':12,'東京都':13,'神奈川県':14,'新潟県':15,'富山県':16,'石川県':17,'福井県':18,'山梨県':19,'長野県':20,'岐阜県':21,'静岡県':22,'愛知県':23,'三重県':24,'滋賀県':25,'京都府':26,'大阪府':27,'兵庫県':28,'奈良県':29,'和歌山県':30,'鳥取県':31,'島根県':32,'岡山県':33,'広島県':34,'山口県':35,'徳島県':36,'香川県':37,'愛媛県':38,'高知県':39,'福岡県':40,'佐賀県':41,'長崎県':42,'熊本県':43,'大分県':44,'宮崎県':45,'鹿児島県':46,'沖縄県':47};
+const AREA_PREFS = {all:Object.keys(PREF_CODES), hokkaido:['北海道'], tohoku:['青森県','岩手県','宮城県','秋田県','山形県','福島県'], kanto:['茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県'], chubu:['新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県'], kinki:['滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県'], chugoku:['鳥取県','島根県','岡山県','広島県','山口県'], shikoku:['徳島県','香川県','愛媛県','高知県'], kyushu:['福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県'], okinawa:['沖縄県']};
 const BRANDS = ['GRAND PGM','PGM','アコーディア','その他'];
-const CONDITIONS = ['1人予約可','宿泊あり','カートあり','温泉近く','高速IC近い'];
-const AREA_LABELS = {all:'全国', hokkaido_tohoku:'北海道・東北', kanto:'関東', chubu:'中部', kinki:'近畿', chugoku:'中国', shikoku:'四国', kyushu:'九州', okinawa:'沖縄'};
-const REGION_BY_PREF = {'北海道':'北海道・東北','青森県':'北海道・東北','岩手県':'北海道・東北','宮城県':'北海道・東北','秋田県':'北海道・東北','山形県':'北海道・東北','福島県':'北海道・東北','茨城県':'関東','栃木県':'関東','群馬県':'関東','埼玉県':'関東','千葉県':'関東','東京都':'関東','神奈川県':'関東','新潟県':'中部','富山県':'中部','石川県':'中部','福井県':'中部','山梨県':'中部','長野県':'中部','岐阜県':'中部','静岡県':'中部','愛知県':'中部','三重県':'近畿','滋賀県':'近畿','京都府':'近畿','大阪府':'近畿','兵庫県':'近畿','奈良県':'近畿','和歌山県':'近畿','鳥取県':'中国','島根県':'中国','岡山県':'中国','広島県':'中国','山口県':'中国','徳島県':'四国','香川県':'四国','愛媛県':'四国','高知県':'四国','福岡県':'九州','佐賀県':'九州','長崎県':'九州','熊本県':'九州','大分県':'九州','宮崎県':'九州','鹿児島県':'九州','沖縄県':'沖縄'};
-const PREF_TRAITS = {'北海道':{cool:10,warm:-6,snow:10,closure:8,scenic:9},'青森県':{cool:8,warm:-5,snow:8,closure:6,scenic:8},'岩手県':{cool:8,warm:-4,snow:7,closure:5,scenic:8},'宮城県':{cool:5,warm:0,snow:3,closure:2,scenic:6},'秋田県':{cool:8,warm:-5,snow:8,closure:6,scenic:8},'山形県':{cool:8,warm:-4,snow:8,closure:6,scenic:7},'福島県':{cool:6,warm:-1,snow:5,closure:4,scenic:7},'茨城県':{cool:2,warm:4,snow:0,closure:0,scenic:4},'栃木県':{cool:5,warm:2,snow:4,closure:2,scenic:7},'群馬県':{cool:5,warm:2,snow:4,closure:3,scenic:7},'埼玉県':{cool:0,warm:3,snow:0,closure:0,scenic:3},'千葉県':{cool:1,warm:8,snow:0,closure:0,scenic:4},'東京都':{cool:0,warm:4,snow:0,closure:0,scenic:3},'神奈川県':{cool:1,warm:6,snow:0,closure:0,scenic:5},'新潟県':{cool:6,warm:-2,snow:9,closure:7,scenic:7},'富山県':{cool:5,warm:-1,snow:6,closure:4,scenic:7},'石川県':{cool:4,warm:1,snow:5,closure:3,scenic:6},'福井県':{cool:4,warm:2,snow:4,closure:3,scenic:6},'山梨県':{cool:6,warm:1,snow:4,closure:2,scenic:8},'長野県':{cool:10,warm:-3,snow:8,closure:6,scenic:9},'岐阜県':{cool:5,warm:0,snow:5,closure:4,scenic:7},'静岡県':{cool:3,warm:8,snow:0,closure:0,scenic:8},'愛知県':{cool:1,warm:5,snow:0,closure:0,scenic:4},'三重県':{cool:1,warm:7,snow:0,closure:0,scenic:6},'滋賀県':{cool:2,warm:3,snow:2,closure:1,scenic:5},'京都府':{cool:1,warm:4,snow:1,closure:1,scenic:6},'大阪府':{cool:0,warm:5,snow:0,closure:0,scenic:3},'兵庫県':{cool:2,warm:5,snow:1,closure:1,scenic:7},'奈良県':{cool:2,warm:4,snow:1,closure:1,scenic:6},'和歌山県':{cool:1,warm:9,snow:0,closure:0,scenic:8},'鳥取県':{cool:3,warm:4,snow:2,closure:1,scenic:6},'島根県':{cool:3,warm:5,snow:2,closure:1,scenic:7},'岡山県':{cool:1,warm:7,snow:0,closure:0,scenic:5},'広島県':{cool:1,warm:6,snow:0,closure:0,scenic:6},'山口県':{cool:2,warm:7,snow:0,closure:0,scenic:7},'徳島県':{cool:1,warm:7,snow:0,closure:0,scenic:6},'香川県':{cool:1,warm:8,snow:0,closure:0,scenic:5},'愛媛県':{cool:1,warm:8,snow:0,closure:0,scenic:7},'高知県':{cool:2,warm:9,snow:0,closure:0,scenic:8},'福岡県':{cool:1,warm:7,snow:0,closure:0,scenic:5},'佐賀県':{cool:1,warm:7,snow:0,closure:0,scenic:5},'長崎県':{cool:2,warm:8,snow:0,closure:0,scenic:7},'熊本県':{cool:3,warm:7,snow:0,closure:0,scenic:8},'大分県':{cool:3,warm:7,snow:0,closure:0,scenic:8},'宮崎県':{cool:2,warm:10,snow:0,closure:0,scenic:8},'鹿児島県':{cool:2,warm:10,snow:0,closure:0,scenic:8},'沖縄県':{cool:4,warm:10,snow:0,closure:0,scenic:7}};
+const CONDITIONS = ['カートあり'];
 
-const BRAND_URLS = {'GRAND PGM':'https://www.pacificgolf.co.jp/grand/','PGM':'https://www.pacificgolf.co.jp/course/','アコーディア':'https://www.accordiagolf.com/','その他':'https://search.gora.golf.rakuten.co.jp/'};
-const GDO_PREF_URL = pref => `https://reserve.golfdigest.co.jp/course-guide/search/?pref=${encodeURIComponent(pref.replace(/県|府/g,''))}`;
-const GORA_PREF_URL = pref => `https://search.gora.golf.rakuten.co.jp/?l-id=top_normal_search&pref=${encodeURIComponent(pref.replace(/県|府/g,''))}`;
-const prefLabel = pref => pref === '北海道' ? '北海道' : pref.replace(/都|道|府|県/g,'');
+const REGION_SCORE = {"北海道":{"cool":10,"warm":-6,"snow":10},"青森県":{"cool":8,"warm":-4,"snow":8},"岩手県":{"cool":8,"warm":-4,"snow":7},"宮城県":{"cool":5,"warm":0,"snow":3},"秋田県":{"cool":8,"warm":-4,"snow":8},"山形県":{"cool":8,"warm":-3,"snow":8},"福島県":{"cool":6,"warm":-1,"snow":5},"茨城県":{"cool":2,"warm":4,"snow":0},"栃木県":{"cool":5,"warm":2,"snow":4},"群馬県":{"cool":5,"warm":2,"snow":4},"埼玉県":{"cool":0,"warm":3,"snow":0},"千葉県":{"cool":1,"warm":8,"snow":0},"東京都":{"cool":0,"warm":4,"snow":0},"神奈川県":{"cool":1,"warm":6,"snow":0},"新潟県":{"cool":6,"warm":-2,"snow":9},"富山県":{"cool":5,"warm":-1,"snow":6},"石川県":{"cool":4,"warm":1,"snow":5},"福井県":{"cool":4,"warm":2,"snow":4},"山梨県":{"cool":6,"warm":1,"snow":4},"長野県":{"cool":10,"warm":-3,"snow":8},"岐阜県":{"cool":5,"warm":0,"snow":5},"静岡県":{"cool":3,"warm":8,"snow":0},"愛知県":{"cool":1,"warm":5,"snow":0},"三重県":{"cool":1,"warm":7,"snow":0},"滋賀県":{"cool":2,"warm":3,"snow":2},"京都府":{"cool":1,"warm":4,"snow":1},"大阪府":{"cool":0,"warm":5,"snow":0},"兵庫県":{"cool":2,"warm":5,"snow":1},"奈良県":{"cool":2,"warm":4,"snow":1},"和歌山県":{"cool":1,"warm":9,"snow":0},"鳥取県":{"cool":3,"warm":4,"snow":2},"島根県":{"cool":3,"warm":5,"snow":2},"岡山県":{"cool":1,"warm":7,"snow":0},"広島県":{"cool":1,"warm":6,"snow":0},"山口県":{"cool":2,"warm":7,"snow":0},"徳島県":{"cool":1,"warm":7,"snow":0},"香川県":{"cool":1,"warm":8,"snow":0},"愛媛県":{"cool":1,"warm":8,"snow":0},"高知県":{"cool":2,"warm":9,"snow":0},"福岡県":{"cool":1,"warm":7,"snow":0},"佐賀県":{"cool":1,"warm":7,"snow":0},"長崎県":{"cool":2,"warm":8,"snow":0},"熊本県":{"cool":3,"warm":7,"snow":0},"大分県":{"cool":3,"warm":7,"snow":0},"宮崎県":{"cool":2,"warm":10,"snow":0},"鹿児島県":{"cool":2,"warm":10,"snow":0},"沖縄県":{"cool":4,"warm":10,"snow":0}};
+const BRAND_MATCH = {"GRAND PGM":["桂ゴルフ倶楽部","利府ゴルフ倶楽部","サンヒルズカントリークラブ","プレステージカントリークラブ","美浦ゴルフ倶楽部","ザ・ゴルフクラブ竜ヶ崎","千代田カントリークラブ","セゴビアゴルフクラブ イン チヨダ","ＰＧＭ石岡ゴルフクラブ","PGM石岡ゴルフクラブ","ＰＧＭ武蔵ゴルフクラブ","PGM武蔵ゴルフクラブ","総武カントリークラブ","ＰＧＭ総成ゴルフクラブ","PGM総成ゴルフクラブ","ＰＧＭマリアゴルフリンクス","PGMマリアゴルフリンクス","花の木ゴルフクラブ","茨木国際ゴルフ倶楽部","大宝塚ゴルフクラブ","ＰＧＭゴルフリゾート沖縄","PGMゴルフリゾート沖縄"],"PGM":["チサンカントリークラブ銭凾","サンパーク札幌ゴルフコース","札幌北広島ゴルフ倶楽部","グレート札幌カントリー倶楽部","新千歳カントリークラブ","松島チサンカントリークラブ","グレート仙台カントリー倶楽部","仙台ヒルズゴルフ倶楽部","グレースリッジカントリークラブ","パーシモンカントリークラブ","ローレルバレイカントリークラブ","グランドスラムカントリークラブ","扶桑カントリー倶楽部","カントリークラブ ザ・レイクス","玉造ゴルフ倶楽部","霞ヶ浦カントリー倶楽部","笠間カントリークラブ","阿見ゴルフクラブ","ザ・インペリアルカントリークラブ","勝田ゴルフ倶楽部","スプリングフィルズゴルフクラブ","内原カントリー倶楽部","鹿島の杜カントリー倶楽部","オールドオーチャードゴルフクラブ","千成ゴルフクラブ","皐月ゴルフ倶楽部","大日向カントリー倶楽部","ピートダイゴルフクラブ","エヴァンタイユゴルフクラブ","ハーモニーヒルズ ゴルフクラブ","あさひヶ丘カントリークラブ","ＰＧＭ富岡カントリークラブ","PGM富岡カントリークラブ","京カントリークラブ","クリアビューゴルフクラブ","成田の森カントリークラブ","長太郎カントリークラブ","丸の内倶楽部","アバイディングクラブ","イーグルレイク ゴルフクラブ","ムーンレイク ゴルフクラブ","総丘カントリー倶楽部","千葉国際カントリークラブ","南総ヒルズカントリークラブ","東京ベイサイドゴルフコース","大多喜カントリークラブ","ＰＧＭ南市原ゴルフクラブ","PGM南市原ゴルフクラブ","岡部チサンカントリークラブ","飯能くすの樹カントリー倶楽部","KOSHIGAYA GOLF CLUB","富貴ゴルフ倶楽部","秦野カントリークラブ","東名厚木カントリー倶楽部","伊勢原カントリークラブ","大秦野カントリークラブ","中央都留カントリー倶楽部","中央道晴ヶ峰カントリー倶楽部","中峰ゴルフ倶楽部","富士チサンカントリークラブ","相良カントリー倶楽部","三木の里カントリークラブ","三島ゴルフ倶楽部","御殿場東名ゴルフクラブ","ＰＧＭ御殿場カントリークラブ","PGM御殿場カントリークラブ","新城カントリー倶楽部","多治見北ゴルフ倶楽部","名古屋ヒルズゴルフ倶楽部","山岡カントリークラブ","笹平カントリー倶楽部","ニューキャピタルゴルフ倶楽部","近江ヒルズゴルフ倶楽部","滋賀ゴルフ倶楽部","竜王ゴルフコース","名阪チサンカントリークラブ","亀山ゴルフクラブ","一志ゴルフ倶楽部","貴志川ゴルフ倶楽部","木津川カントリー倶楽部","法隆寺カントリー倶楽部","かさぎゴルフ倶楽部","枚方国際ゴルフ倶楽部","関西空港ゴルフ倶楽部","岸和田カントリー倶楽部","ＰＧＭ池田カントリークラブ","PGM池田カントリークラブ","ヤシロカントリークラブ","アークよかわゴルフ倶楽部","ライオンズカントリー倶楽部","三日月カントリークラブ","ＰＧＭゴルフリゾート沖縄","PGMゴルフリゾート沖縄"],"アコーディア":["セントラルゴルフクラブ","土浦カントリー倶楽部","出島ゴルフクラブ","ワイルドダックカントリークラブ","グレンオークスカントリークラブ","佐原カントリークラブ","スカイウェイカントリークラブ","千葉桜の里ゴルフクラブ","東京湾カントリークラブ","習志野カントリークラブ","成田ゴルフ倶楽部","成田東カントリークラブ","ニュー南総ゴルフ倶楽部","花生カントリークラブ","東千葉カントリークラブ","富士市原ゴルフクラブ","房州カントリークラブ","四街道ゴルフ倶楽部","ラ・ヴィスタゴルフリゾート","東京相武カントリークラブ","愛鷹シックスハンドレッドクラブ","伊豆国際カントリークラブ","掛川カントリークラブ","十里木カントリークラブ","三島カントリークラブ","東条パインバレーゴルフクラブ","播磨カントリークラブ","播州東洋ゴルフ倶楽部","富士小野ゴルフクラブ","三木セブンハンドレッド倶楽部","やしろ東条ゴルフクラブ","山の原ゴルフクラブ","ローズウッドゴルフクラブ","ロータリーゴルフ倶楽部","六甲カントリー倶楽部","オーシャンキャッスルカントリークラブ","沖縄カントリークラブ","ザ・サザンリンクスゴルフクラブ","パームヒルズゴルフリゾートクラブ"]};
 
-const REAL_COURSES = [
-  {prefecture:'北海道',brand:'GRAND PGM',name:'桂ゴルフ倶楽部',site:'https://www.pacificgolf.co.jp/katsura/',rating:4.6,distanceKm:38,conditions:['1人予約可','カートあり','高速IC近い']},
-  {prefecture:'北海道',brand:'PGM',name:'札幌北広島ゴルフ倶楽部',site:'https://www.pacificgolf.co.jp/sapporokitahiroshima/',rating:4.1,distanceKm:26,conditions:['1人予約可','カートあり','高速IC近い']},
-  {prefecture:'北海道',brand:'アコーディア',name:'苫小牧ゴルフリゾート72 アイリスゴルフクラブ',site:'https://www.accordiagolf.com/',rating:4.0,distanceKm:68,conditions:['カートあり']},
-  {prefecture:'北海道',brand:'その他',name:'北海道クラシックゴルフクラブ',site:'https://www.hokkaido-classicgolf.com/',rating:4.4,distanceKm:48,conditions:['カートあり','高速IC近い']},
-  {prefecture:'北海道',brand:'その他',name:'ニドムクラシックコース',site:'https://www.nidomresort.jp/golf/',rating:4.2,distanceKm:64,conditions:['宿泊あり','カートあり']},
+function normalizeName(s){ return (s||'').replace(/[Ａ-Ｚａ-ｚ０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\s+/g,' ').replace(/[　]/g,' ').trim().toLowerCase(); }
+function inferBrand(name){ const n = normalizeName(name); for(const [brand, patterns] of Object.entries(BRAND_MATCH)){ for(const p of patterns){ if(n.includes(normalizeName(p))) return brand; } } return 'その他'; }
+function currentSeason(){ const v=document.getElementById('season').value; if(v!=='auto') return v; const m=new Date().getMonth()+1; if([3,4,5].includes(m)) return 'spring'; if([6,7,8].includes(m)) return 'summer'; if([9,10,11].includes(m)) return 'autumn'; return 'winter'; }
+function seasonLabelText(k){ return {spring:'春',summer:'夏',autumn:'秋',winter:'冬'}[k]; }
+function comfort(pref, brand, evaluation){ const s=currentSeason(); const t=REGION_SCORE[pref]||{cool:0,warm:0,snow:0}; let score=70 + (brand==='GRAND PGM'?8:brand==='PGM'?5:brand==='アコーディア'?3:0); score += Math.max(0, ((evaluation||3.8)-3.8)*12); if(s==='summer') score += t.cool*1.8 - t.warm*0.2 - t.snow*0.1; if(s==='winter') score += t.warm*1.9 - t.snow*2.2; if(s==='spring') score += t.warm*0.5 + t.cool*0.3; if(s==='autumn') score += t.cool*0.5 + t.warm*0.3; return Math.max(50, Math.min(99, Math.round(score))); }
 
-  {prefecture:'宮城県',brand:'PGM',name:'利府ゴルフ倶楽部',site:'https://www.pacificgolf.co.jp/rifu/',rating:4.2,distanceKm:24,conditions:['カートあり','高速IC近い']},
-  {prefecture:'宮城県',brand:'その他',name:'仙台クラシックゴルフ倶楽部',site:'https://www.sendai-classicgc.com/',rating:4.0,distanceKm:34,conditions:['カートあり']},
-  {prefecture:'宮城県',brand:'その他',name:'松島チサンカントリークラブ 大郷コース',site:'https://www.pacificgolf.co.jp/matsushima/',rating:3.9,distanceKm:30,conditions:['カートあり','高速IC近い']},
+const brandChips=document.getElementById('brandChips'), condChips=document.getElementById('condChips'), statusBox=document.getElementById('statusBox');
+let activeBrands=new Set(BRANDS), activeConds=new Set(CONDITIONS), lastPref=null, cache=new Map();
 
-  {prefecture:'茨城県',brand:'GRAND PGM',name:'PGM石岡ゴルフクラブ',site:'https://www.pacificgolf.co.jp/ishioka/',rating:4.5,distanceKm:52,conditions:['カートあり','高速IC近い']},
-  {prefecture:'茨城県',brand:'GRAND PGM',name:'ザ・ゴルフクラブ竜ヶ崎',site:'https://www.pacificgolf.co.jp/ryugasaki/',rating:4.4,distanceKm:62,conditions:['カートあり','高速IC近い']},
-  {prefecture:'茨城県',brand:'PGM',name:'阿見ゴルフクラブ',site:'https://www.pacificgolf.co.jp/ami/',rating:4.3,distanceKm:35,conditions:['1人予約可','カートあり','高速IC近い']},
-  {prefecture:'茨城県',brand:'アコーディア',name:'水戸・ゴルフ・クラブ',site:'https://www.accordiagolf.com/',rating:3.9,distanceKm:18,conditions:['カートあり']},
-  {prefecture:'茨城県',brand:'その他',name:'大洗ゴルフ倶楽部',site:'https://www.oarai-golf-club.co.jp/',rating:4.6,distanceKm:22,conditions:['カートあり']},
-  {prefecture:'茨城県',brand:'その他',name:'静ヒルズカントリークラブ',site:'https://www.shizuhills.jp/',rating:4.3,distanceKm:46,conditions:['宿泊あり','カートあり']},
-  {prefecture:'茨城県',brand:'その他',name:'宍戸ヒルズカントリークラブ',site:'https://www.shishido.co.jp/shishido/',rating:4.4,distanceKm:36,conditions:['カートあり','高速IC近い']},
-  {prefecture:'茨城県',brand:'その他',name:'サザンヤードカントリークラブ',site:'https://www.southernyard.jp/',rating:4.1,distanceKm:28,conditions:['カートあり']},
-  {prefecture:'茨城県',brand:'その他',name:'扶桑カントリー倶楽部',site:'https://www.fusocc.co.jp/',rating:3.8,distanceKm:25,conditions:['カートあり','高速IC近い']},
+function renderChips(target, items, activeSet){ target.innerHTML=''; items.forEach(item=>{ const el=document.createElement('div'); el.className='chip active'; el.textContent=item; el.onclick=()=>{ if(activeSet.has(item)) activeSet.delete(item); else activeSet.add(item); if(target.id==='brandChips' && activeSet.size===0) activeSet.add(item); if(target.id==='condChips' && activeSet.size===0) activeSet.add(item); syncChips(); }; target.appendChild(el); }); }
+function syncChips(){ [...brandChips.children].forEach((el,i)=>el.classList.toggle('active', activeBrands.has(BRANDS[i]))); [...condChips.children].forEach((el,i)=>el.classList.toggle('active', activeConds.has(CONDITIONS[i]))); }
+renderChips(brandChips, BRANDS, activeBrands); renderChips(condChips, CONDITIONS, activeConds); syncChips();
 
-  {prefecture:'栃木県',brand:'GRAND PGM',name:'ピートダイゴルフクラブ VIPコース',site:'https://www.pacificgolf.co.jp/petedye_vip/',rating:4.2,distanceKm:44,conditions:['カートあり','高速IC近い']},
-  {prefecture:'栃木県',brand:'PGM',name:'プレステージカントリークラブ',site:'https://www.pacificgolf.co.jp/prestige/',rating:4.4,distanceKm:38,conditions:['カートあり','高速IC近い']},
-  {prefecture:'栃木県',brand:'アコーディア',name:'ニューセントアンドリュース ゴルフクラブ・ジャパン',site:'https://www.accordiagolf.com/',rating:4.0,distanceKm:58,conditions:['宿泊あり','カートあり']},
-  {prefecture:'栃木県',brand:'その他',name:'西那須野カントリー倶楽部',site:'https://www.nishinasuno-cc.com/',rating:4.5,distanceKm:68,conditions:['カートあり']},
-  {prefecture:'栃木県',brand:'その他',name:'烏山城カントリークラブ',site:'https://www.karasuyamajo.com/',rating:4.2,distanceKm:49,conditions:['カートあり']},
-  {prefecture:'栃木県',brand:'その他',name:'ロペ倶楽部',site:'https://www.lopeclub.com/',rating:4.3,distanceKm:71,conditions:['宿泊あり','カートあり']},
-  {prefecture:'栃木県',brand:'その他',name:'ホウライカントリー倶楽部',site:'https://www.horai-cc.com/',rating:4.1,distanceKm:66,conditions:['宿泊あり','カートあり']},
-  {prefecture:'栃木県',brand:'その他',name:'那須ゴルフ倶楽部',site:'https://www.nasugolf.com/',rating:3.8,distanceKm:79,conditions:['カートあり']},
+function setStatus(type, html){ statusBox.className=type; statusBox.innerHTML=html; }
+function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
 
-  {prefecture:'千葉県',brand:'GRAND PGM',name:'クリアビューゴルフクラブ＆ホテル',site:'https://www.pacificgolf.co.jp/clearview/',rating:4.0,distanceKm:40,conditions:['宿泊あり','カートあり']},
-  {prefecture:'千葉県',brand:'PGM',name:'総丘カントリー倶楽部',site:'https://www.pacificgolf.co.jp/sooka/',rating:4.0,distanceKm:76,conditions:['1人予約可','カートあり']},
-  {prefecture:'千葉県',brand:'アコーディア',name:'東千葉カントリークラブ',site:'https://www.accordiagolf.com/',rating:4.0,distanceKm:26,conditions:['1人予約可','カートあり']},
-  {prefecture:'千葉県',brand:'その他',name:'成田ゴルフ倶楽部',site:'https://www.narita-gc.com/',rating:4.4,distanceKm:34,conditions:['カートあり','高速IC近い']},
-  {prefecture:'千葉県',brand:'その他',name:'浜野ゴルフクラブ',site:'https://www.hamano-golf.co.jp/',rating:4.3,distanceKm:24,conditions:['カートあり']},
-  {prefecture:'千葉県',brand:'その他',name:'千葉夷隅ゴルフクラブ',site:'https://www.chibaisumi.jp/',rating:4.2,distanceKm:58,conditions:['カートあり']},
-  {prefecture:'千葉県',brand:'その他',name:'袖ヶ浦カンツリークラブ 新袖コース',site:'https://www.sodegaura.co.jp/',rating:4.3,distanceKm:18,conditions:['カートあり']},
-  {prefecture:'千葉県',brand:'その他',name:'麻倉ゴルフ倶楽部',site:'https://www.asakura-gc.jp/',rating:4.1,distanceKm:32,conditions:['カートあり','高速IC近い']},
-
-  {prefecture:'埼玉県',brand:'PGM',name:'岡部チサンカントリークラブ',site:'https://www.pacificgolf.co.jp/okabe/',rating:3.9,distanceKm:66,conditions:['1人予約可','カートあり']},
-  {prefecture:'埼玉県',brand:'アコーディア',name:'さいたま梨花カントリークラブ',site:'https://www.accordiagolf.com/',rating:3.8,distanceKm:59,conditions:['カートあり']},
-  {prefecture:'埼玉県',brand:'その他',name:'飯能ゴルフクラブ',site:'https://www.hanno-gc.co.jp/',rating:4.2,distanceKm:50,conditions:['カートあり']},
-  {prefecture:'埼玉県',brand:'その他',name:'高坂カントリークラブ',site:'https://www.takasakacc.co.jp/',rating:4.1,distanceKm:52,conditions:['カートあり']},
-  {prefecture:'埼玉県',brand:'その他',name:'武蔵カントリークラブ',site:'https://www.musashi-cc.co.jp/',rating:4.2,distanceKm:46,conditions:['カートあり']},
-  {prefecture:'埼玉県',brand:'その他',name:'嵐山カントリークラブ',site:'https://www.ranzancc.com/',rating:4.0,distanceKm:47,conditions:['カートあり']},
-  {prefecture:'埼玉県',brand:'その他',name:'石坂ゴルフ倶楽部',site:'https://www.ishizaka-gc.com/',rating:4.1,distanceKm:44,conditions:['カートあり']},
-
-  {prefecture:'東京都',brand:'アコーディア',name:'東京相武カントリークラブ',site:'https://www.accordiagolf.com/',rating:3.9,distanceKm:42,conditions:['カートあり']},
-  {prefecture:'東京都',brand:'その他',name:'東京よみうりカントリークラブ',site:'https://www.tokyoyomiuri.com/',rating:4.3,distanceKm:31,conditions:['カートあり']},
-  {prefecture:'東京都',brand:'その他',name:'桜ヶ丘カントリークラブ',site:'https://www.sakuragaoka-cc.com/',rating:4.0,distanceKm:28,conditions:['カートあり']},
-  {prefecture:'東京都',brand:'その他',name:'青梅ゴルフ倶楽部',site:'https://www.omegc.co.jp/',rating:3.8,distanceKm:53,conditions:['カートあり']},
-
-  {prefecture:'神奈川県',brand:'アコーディア',name:'秦野カントリークラブ',site:'https://www.accordiagolf.com/',rating:3.9,distanceKm:57,conditions:['カートあり']},
-  {prefecture:'神奈川県',brand:'その他',name:'戸塚カントリー倶楽部',site:'https://www.totsuka-cc.com/',rating:4.4,distanceKm:22,conditions:['カートあり']},
-  {prefecture:'神奈川県',brand:'その他',name:'相模原ゴルフクラブ',site:'https://www.sagamihara-gc.co.jp/',rating:4.2,distanceKm:36,conditions:['カートあり']},
-  {prefecture:'神奈川県',brand:'その他',name:'大箱根カントリークラブ',site:'https://www.princehotels.co.jp/golf/oohakone/',rating:4.3,distanceKm:74,conditions:['宿泊あり','カートあり']},
-  {prefecture:'神奈川県',brand:'その他',name:'レイクウッドゴルフクラブ',site:'https://www.lake-wood.co.jp/golfclub/',rating:4.0,distanceKm:55,conditions:['カートあり']},
-  {prefecture:'神奈川県',brand:'その他',name:'チェックメイトカントリークラブ',site:'https://www.checkmatecc.com/',rating:3.8,distanceKm:41,conditions:['カートあり']},
-
-  {prefecture:'静岡県',brand:'GRAND PGM',name:'葛城ゴルフ倶楽部',site:'https://www.pacificgolf.co.jp/katsuragi/',rating:4.5,distanceKm:46,conditions:['カートあり','高速IC近い']},
-  {prefecture:'静岡県',brand:'PGM',name:'三木の里カントリークラブ',site:'https://www.pacificgolf.co.jp/mikinosato/',rating:3.8,distanceKm:39,conditions:['カートあり']},
-  {prefecture:'静岡県',brand:'アコーディア',name:'富士の杜ゴルフクラブ',site:'https://www.accordiagolf.com/',rating:3.9,distanceKm:91,conditions:['カートあり']},
-  {prefecture:'静岡県',brand:'その他',name:'川奈ホテルゴルフコース 富士コース',site:'https://www.princehotels.co.jp/golf/kawana/',rating:4.7,distanceKm:95,conditions:['宿泊あり','カートあり']},
-  {prefecture:'静岡県',brand:'その他',name:'太平洋クラブ 御殿場コース',site:'https://www.taiheiyoclub.co.jp/course/gotemba/',rating:4.6,distanceKm:88,conditions:['カートあり']},
-  {prefecture:'静岡県',brand:'その他',name:'静岡カントリー浜岡コース＆ホテル',site:'https://www.scg.jp/hamaoka/',rating:4.1,distanceKm:63,conditions:['宿泊あり','カートあり']},
-  {prefecture:'静岡県',brand:'その他',name:'東名カントリークラブ',site:'https://www.tomeicc.co.jp/',rating:3.9,distanceKm:73,conditions:['カートあり']},
-  {prefecture:'静岡県',brand:'その他',name:'朝霧ジャンボリーゴルフクラブ',site:'https://www.asagiri.net/',rating:3.8,distanceKm:102,conditions:['カートあり']},
-
-  {prefecture:'愛知県',brand:'PGM',name:'半田ゴルフリンクス',site:'https://www.pacificgolf.co.jp/handa/',rating:4.1,distanceKm:42,conditions:['カートあり','高速IC近い']},
-  {prefecture:'愛知県',brand:'その他',name:'名古屋ゴルフ倶楽部 和合コース',site:'https://www.nagoyagc.co.jp/',rating:4.6,distanceKm:18,conditions:['カートあり']},
-  {prefecture:'愛知県',brand:'その他',name:'中京ゴルフ倶楽部 石野コース',site:'https://www.chukyo-gc.jp/',rating:4.1,distanceKm:37,conditions:['カートあり']},
-  {prefecture:'愛知県',brand:'その他',name:'三好カントリー倶楽部',site:'https://www.miyoshi-cc.jp/',rating:4.3,distanceKm:29,conditions:['カートあり']},
-  {prefecture:'愛知県',brand:'その他',name:'額田ゴルフ倶楽部',site:'https://www.nukata-golf.com/',rating:3.9,distanceKm:48,conditions:['カートあり']},
-  {prefecture:'愛知県',brand:'その他',name:'新南愛知カントリークラブ 美浜コース',site:'https://www.minamiaichi.co.jp/',rating:3.8,distanceKm:56,conditions:['カートあり']},
-
-  {prefecture:'三重県',brand:'アコーディア',name:'四日市の里ゴルフクラブ',site:'https://www.accordiagolf.com/',rating:3.8,distanceKm:31,conditions:['カートあり']},
-  {prefecture:'三重県',brand:'その他',name:'涼仙ゴルフ倶楽部',site:'https://www.ryosen.jp/',rating:4.2,distanceKm:55,conditions:['カートあり']},
-  {prefecture:'三重県',brand:'その他',name:'トーナメントプレーヤーズクラブ',site:'https://www.tpcgc.com/',rating:4.0,distanceKm:41,conditions:['カートあり']},
-  {prefecture:'三重県',brand:'その他',name:'名四カントリークラブ',site:'https://www.meishi-cc.com/',rating:3.9,distanceKm:28,conditions:['カートあり']},
-  {prefecture:'三重県',brand:'その他',name:'双鈴ゴルフクラブ 土山コース',site:'https://www.souringolf.com/',rating:3.8,distanceKm:63,conditions:['カートあり']},
-
-  {prefecture:'兵庫県',brand:'PGM',name:'武庫ノ台ゴルフコース',site:'https://www.pacificgolf.co.jp/mukonodai/',rating:3.9,distanceKm:30,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'アコーディア',name:'三木セブンハンドレッド倶楽部',site:'https://www.accordiagolf.com/',rating:3.9,distanceKm:48,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'その他',name:'廣野ゴルフ倶楽部',site:'https://www.hirono-gc.com/',rating:4.8,distanceKm:42,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'その他',name:'ABCゴルフ倶楽部',site:'https://www.abc-gc.co.jp/',rating:4.5,distanceKm:46,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'その他',name:'小野東洋ゴルフ倶楽部',site:'https://www.onotoyo-gc.com/',rating:4.2,distanceKm:58,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'その他',name:'有馬ロイヤルゴルフクラブ',site:'https://www.arima-royal.com/',rating:4.0,distanceKm:26,conditions:['カートあり']},
-  {prefecture:'兵庫県',brand:'その他',name:'マスターズゴルフ倶楽部',site:'https://www.masters-gc.jp/',rating:3.9,distanceKm:61,conditions:['カートあり']},
-
-  {prefecture:'奈良県',brand:'その他',name:'KOMAカントリークラブ',site:'https://www.koma-cc.jp/',rating:4.0,distanceKm:44,conditions:['カートあり']},
-  {prefecture:'奈良県',brand:'その他',name:'ディアーパークゴルフクラブ',site:'https://www.deer-park.co.jp/',rating:3.8,distanceKm:33,conditions:['カートあり']},
-
-  {prefecture:'和歌山県',brand:'その他',name:'橋本カントリークラブ',site:'https://www.hashimoto-cc.com/',rating:3.9,distanceKm:57,conditions:['カートあり']},
-  {prefecture:'和歌山県',brand:'その他',name:'ラ・グレースゴルフ倶楽部 和歌山コース',site:'https://www.lagrace-gc.com/',rating:3.8,distanceKm:38,conditions:['カートあり']},
-
-  {prefecture:'岡山県',brand:'PGM',name:'岡山国際ゴルフ倶楽部',site:'https://www.pacificgolf.co.jp/okayamakokusai/',rating:3.9,distanceKm:21,conditions:['カートあり']},
-  {prefecture:'岡山県',brand:'その他',name:'JFE瀬戸内海ゴルフ倶楽部',site:'https://www.jfe-setonaikai.co.jp/',rating:4.2,distanceKm:36,conditions:['カートあり']},
-  {prefecture:'岡山県',brand:'その他',name:'鬼ノ城ゴルフ倶楽部',site:'https://www.oninosho.co.jp/',rating:4.0,distanceKm:29,conditions:['カートあり']},
-  {prefecture:'岡山県',brand:'その他',name:'東児が丘マリンヒルズゴルフクラブ',site:'https://www.toujigaoka.co.jp/',rating:3.9,distanceKm:52,conditions:['カートあり']},
-
-  {prefecture:'広島県',brand:'アコーディア',name:'広島安佐ゴルフクラブ',site:'https://www.accordiagolf.com/',rating:3.8,distanceKm:17,conditions:['カートあり']},
-  {prefecture:'広島県',brand:'その他',name:'広島カンツリー倶楽部 八本松コース',site:'https://www.hiroshima-cc.co.jp/',rating:4.1,distanceKm:33,conditions:['カートあり']},
-  {prefecture:'広島県',brand:'その他',name:'リージャスクレストゴルフクラブ',site:'https://www.reguscrest.com/',rating:4.0,distanceKm:57,conditions:['カートあり']},
-  {prefecture:'広島県',brand:'その他',name:'鷹の巣ゴルフクラブ',site:'https://www.takanosu-gc.com/',rating:3.9,distanceKm:48,conditions:['カートあり']},
-
-  {prefecture:'香川県',brand:'その他',name:'鮎滝カントリークラブ',site:'https://www.ayutaki-cc.com/',rating:3.8,distanceKm:18,conditions:['カートあり']},
-  {prefecture:'愛媛県',brand:'その他',name:'松山ゴルフ倶楽部 川内コース',site:'https://www.matsuyama-golfclub.com/',rating:3.9,distanceKm:26,conditions:['カートあり']},
-  {prefecture:'高知県',brand:'その他',name:'Kochi黒潮カントリークラブ',site:'https://www.kuroshiocc.co.jp/',rating:4.0,distanceKm:49,conditions:['カートあり']},
-
-  {prefecture:'福岡県',brand:'PGM',name:'皐月ゴルフ倶楽部 竜王コース',site:'https://www.pacificgolf.co.jp/satsuki_ryuo/',rating:3.8,distanceKm:41,conditions:['1人予約可','カートあり']},
-  {prefecture:'福岡県',brand:'その他',name:'芥屋ゴルフ倶楽部',site:'https://www.keyagc.co.jp/',rating:4.2,distanceKm:42,conditions:['カートあり']},
-  {prefecture:'福岡県',brand:'その他',name:'ザ・クラシックゴルフ倶楽部',site:'https://www.theclassic.jp/',rating:4.1,distanceKm:40,conditions:['カートあり']},
-  {prefecture:'福岡県',brand:'その他',name:'門司ゴルフ倶楽部',site:'https://www.mojigc.com/',rating:3.8,distanceKm:70,conditions:['カートあり']},
-
-  {prefecture:'熊本県',brand:'その他',name:'くまもと中央カントリークラブ',site:'https://www.kumachu.com/',rating:4.1,distanceKm:34,conditions:['カートあり']},
-  {prefecture:'大分県',brand:'その他',name:'城島高原ゴルフクラブ',site:'https://www.kijimakogen-gc.jp/',rating:3.9,distanceKm:28,conditions:['宿泊あり','カートあり']},
-  {prefecture:'宮崎県',brand:'その他',name:'フェニックスカントリークラブ',site:'https://www.seagaia.co.jp/golf/phoenix',rating:4.7,distanceKm:18,conditions:['宿泊あり','カートあり']},
-  {prefecture:'宮崎県',brand:'その他',name:'トム・ワトソンゴルフコース',site:'https://www.seagaia.co.jp/golf/tomwatson',rating:4.1,distanceKm:17,conditions:['宿泊あり','カートあり','1人予約可']},
-  {prefecture:'鹿児島県',brand:'その他',name:'鹿児島高牧カントリークラブ',site:'https://www.takamaki-cc.com/',rating:4.0,distanceKm:36,conditions:['カートあり']},
-  {prefecture:'沖縄県',brand:'PGM',name:'PGMゴルフリゾート沖縄',site:'https://www.pacificgolf.co.jp/okinawa/',rating:4.3,distanceKm:39,conditions:['宿泊あり','カートあり']},
-  {prefecture:'沖縄県',brand:'その他',name:'ザ・サザンリンクス・ゴルフクラブ',site:'https://www.southern-links.co.jp/',rating:4.0,distanceKm:16,conditions:['カートあり']}
-];
-
-const ticker = document.getElementById('ticker');
-const brandChips = document.getElementById('brandChips');
-const conditionChips = document.getElementById('conditionChips');
-const seasonSelect = document.getElementById('seasonSelect');
-const areaSelect = document.getElementById('areaSelect');
-const spinBtn = document.getElementById('spinBtn');
-const rerollBtn = document.getElementById('rerollBtn');
-const seasonLabel = document.getElementById('seasonLabel');
-const areaLabel = document.getElementById('areaLabel');
-const statusLabel = document.getElementById('statusLabel');
-const winnerBox = document.getElementById('winnerBox');
-const winnerMeta = document.getElementById('winnerMeta');
-const winnerText = document.getElementById('winnerText');
-const winnerLinks = document.getElementById('winnerLinks');
-const candidateList = document.getElementById('candidateList');
-const winnerSite = document.getElementById('winnerSite');
-
-let activeBrands = new Set(BRANDS);
-let activeConditions = new Set();
-let currentPref = null;
-let spinRunning = false;
-const ITEM_H = 72;
-const CONTAINER_H = 240;
-
-function buildChips(target, values, activeSet) {
-  target.innerHTML = '';
-  values.forEach(v => {
-    const label = document.createElement('label');
-    label.className = 'chip active';
-    label.innerHTML = `<input type="checkbox" checked><span>${v}</span>`;
-    label.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (activeSet.has(v)) activeSet.delete(v); else activeSet.add(v);
-      if (target === brandChips && activeSet.size === 0) activeSet.add(v);
-      renderChipStates();
-      if (currentPref) renderForPref(currentPref, false);
-    });
-    target.appendChild(label);
-  });
-}
-function renderChipStates() {
-  [...brandChips.children].forEach((el, i) => el.classList.toggle('active', activeBrands.has(BRANDS[i])));
-  [...conditionChips.children].forEach((el, i) => el.classList.toggle('active', activeConditions.has(CONDITIONS[i])));
-}
-function getSeason() {
-  const val = seasonSelect.value;
-  if (val !== 'auto') return val;
-  const m = new Date().getMonth() + 1;
-  if ([3,4,5].includes(m)) return 'spring';
-  if ([6,7,8].includes(m)) return 'summer';
-  if ([9,10,11].includes(m)) return 'autumn';
-  return 'winter';
-}
-function seasonName(key) { return ({spring:'春', summer:'夏', autumn:'秋', winter:'冬'})[key] || '-'; }
-function filteredPrefs() { return AREAS[areaSelect.value] || PREFS; }
-function scoreComfort(course, season) {
-  const t = PREF_TRAITS[course.prefecture] || {cool:0,warm:0,snow:0,closure:0,scenic:0};
-  let score = 72 + (course.brand === 'GRAND PGM' ? 8 : course.brand === 'PGM' ? 4 : course.brand === 'アコーディア' ? 2 : 0);
-  score += Math.max(0, (course.rating - 3.8) * 10);
-  if (course.conditions.includes('カートあり')) score += 2;
-  if (course.conditions.includes('高速IC近い')) score += 2;
-  if (course.conditions.includes('宿泊あり')) score += 1;
-  if (season === 'summer') score += t.cool * 1.8 - t.warm * 0.2 - t.snow * 0.1 + t.scenic * 0.4;
-  else if (season === 'winter') score += t.warm * 1.9 - t.snow * 2.3 - t.closure * 1.8 + t.scenic * 0.2;
-  else if (season === 'spring') score += t.scenic * 0.7 + t.warm * 0.3 - t.snow * 0.2;
-  else if (season === 'autumn') score += t.scenic * 0.8 + t.cool * 0.4 - t.snow * 0.2;
-  return Math.max(48, Math.min(99, Math.round(score)));
-}
-function getVerifiedCourses(pref) {
-  const season = getSeason();
-  return REAL_COURSES
-    .filter(c => c.prefecture === pref)
-    .filter(c => activeBrands.has(c.brand))
-    .filter(c => [...activeConditions].every(cond => c.conditions.includes(cond)))
-    .filter(c => c.brand !== 'その他' || c.rating >= 3.8)
-    .map(c => ({...c, capital: PREF_CAPITALS[pref], comfort: scoreComfort(c, season), isFallback:false}))
-    .sort((a,b) => b.comfort - a.comfort || b.rating - a.rating || a.distanceKm - b.distanceKm);
-}
-function buildOtherFallbacks(pref) {
-  if (!activeBrands.has('その他')) return [];
-  const season = getSeason();
-  const desiredCount = 5;
-  const existingOtherCount = getVerifiedCourses(pref).filter(c => c.brand === 'その他').length;
-  const needed = Math.max(0, desiredCount - existingOtherCount);
-  const fallbacks = [];
-  for (let i=0;i<needed;i++) {
-    fallbacks.push({
-      id:`${pref}-other-fallback-${i}`,
-      prefecture:pref,
-      capital:PREF_CAPITALS[pref],
-      brand:'その他',
-      name:`${prefLabel(pref)} その他高評価コース候補 ${i+1}`,
-      rating:3.8,
-      distanceKm:20 + i * 9,
-      conditions: activeConditions.size ? [...activeConditions] : ['カートあり'],
-      site: GDO_PREF_URL(pref),
-      officialUrl: GDO_PREF_URL(pref),
-      searchUrl: GORA_PREF_URL(pref),
-      comfort: Math.max(70, scoreComfort({prefecture:pref,brand:'その他',rating:3.8,conditions:['カートあり']}, season) - 3 + i),
-      isFallback:true,
-      fallbackNote:'県別の3.8以上検索結果へ移動します'
-    });
+async function fetchCoursesForPref(pref){
+  const key = pref + '::' + [...activeBrands].sort().join(',') + '::' + currentSeason();
+  if(cache.has(key)) return cache.get(key);
+  const res = await fetch('/api/search?pref=' + encodeURIComponent(pref));
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(txt || 'API error');
   }
-  return fallbacks;
+  const data = await res.json();
+  let list = (data.items || []).map(item => ({
+    pref,
+    golfCourseId:item.golfCourseId,
+    name:item.golfCourseName,
+    evaluation:Number(item.evaluation||0),
+    detailUrl:item.golfCourseDetailUrl || '',
+    reserveUrl:item.reserveCalUrl || item.golfCourseDetailUrl || '',
+    address:item.address || '',
+    caption:item.golfCourseCaption || '',
+    imageUrl:item.golfCourseImageUrl || '',
+    brand: inferBrand(item.golfCourseName)
+  }));
+  list = list.filter(c => activeBrands.has(c.brand) || (c.brand==='その他' && activeBrands.has('その他')));
+  list = list.filter(c => c.brand !== 'その他' || c.evaluation >= 3.8);
+  list = list.map(c => ({...c, comfort: comfort(pref, c.brand, c.evaluation)})).sort((a,b)=> b.comfort - a.comfort || b.evaluation - a.evaluation);
+  cache.set(key, list);
+  return list;
 }
-function getEligibleCourses(pref) {
-  const verified = getVerifiedCourses(pref).map((c,idx)=>({...c,id:`${pref}-${c.brand}-${idx}`,officialUrl:c.site,searchUrl:`https://www.google.com/search?q=${encodeURIComponent(c.name + ' ' + pref)}`}));
-  const withFallbacks = [...verified, ...buildOtherFallbacks(pref)];
-  return withFallbacks.sort((a,b) => b.comfort - a.comfort || b.rating - a.rating || a.distanceKm - b.distanceKm);
-}
-function makeTickerList(prefList, winnerPref) {
-  const safe = prefList.length ? prefList : PREFS;
-  const repeated = [];
-  for (let k = 0; k < 6; k++) repeated.push(...safe);
-  return [...repeated, winnerPref, ...safe.slice(0,8)];
-}
-function renderTicker(items) {
-  ticker.innerHTML = '';
-  items.forEach(name => {
-    const div = document.createElement('div'); div.className = 'ticker-item'; div.textContent = name; ticker.appendChild(div);
-  });
-}
-function pickWinnerPref() { const prefs = filteredPrefs(); return prefs[Math.floor(Math.random() * prefs.length)]; }
-function animateToPref(winnerPref) {
-  return new Promise(resolve => {
-    const prefs = filteredPrefs();
-    const tickerItems = makeTickerList(prefs, winnerPref); renderTicker(tickerItems);
-    const winnerIndex = tickerItems.lastIndexOf(winnerPref);
-    const targetY = (CONTAINER_H / 2) - (ITEM_H / 2) - (winnerIndex * ITEM_H);
-    const duration = 3600; const start = performance.now();
-    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-    function step(now) {
-      const p = Math.min(1, (now - start) / duration);
-      const currentTranslate = targetY * easeOutCubic(p);
-      ticker.style.transform = `translateY(${currentTranslate}px)`;
-      const centerIndex = Math.round(((CONTAINER_H / 2) - (ITEM_H / 2) - currentTranslate) / ITEM_H);
-      statusLabel.textContent = `回転中: ${tickerItems[Math.max(0, Math.min(tickerItems.length - 1, centerIndex))]}`;
-      if (p < 1) requestAnimationFrame(step); else { ticker.style.transform = `translateY(${targetY}px)`; statusLabel.textContent = `決定: ${winnerPref}`; resolve(); }
-    }
-    requestAnimationFrame(step);
-  });
-}
-function linksForCourse(course) {
-  const q = encodeURIComponent(course.name + ' ' + course.prefecture);
-  return {booking: course.officialUrl || course.site, maps:`https://www.google.com/maps/search/?api=1&query=${q}`, search:course.searchUrl || `https://www.google.com/search?q=${q}`};
-}
-function renderCandidates(candidates, pickedId=null) {
-  candidateList.innerHTML = '';
-  if (!candidates.length) { candidateList.innerHTML = `<div class="empty">条件に合うゴルフ場が見つかりませんでした。ブランドか条件を少し緩めてください。</div>`; return; }
-  candidates.forEach(c => {
-    const row = document.createElement('div'); row.className = 'candidate-item';
-    row.innerHTML = `
-      <div class="candidate-top">
-        <div>
-          <div class="candidate-name">${c.id === pickedId ? '★ ' : ''}${c.name}</div>
-          <div class="candidate-sub">${c.brand} / ${c.prefecture} / ${c.capital}近辺</div>
-        </div>
-        <div class="pill">快適度 ${c.comfort}</div>
-      </div>
-      <div class="candidate-sub">評価 ${c.rating.toFixed(1)} ・ 県庁所在地から約${c.distanceKm}km ・ ${c.conditions.join(' / ') || '条件情報なし'}</div>
-      <div class="candidate-sub">${c.isFallback ? `検索候補: <a href="${c.officialUrl}" target="_blank" rel="noopener noreferrer">3.8以上の県別候補を見る</a>` : `公式サイト: <a href="${c.site}" target="_blank" rel="noopener noreferrer">${c.site}</a>`}</div>`;
-    candidateList.appendChild(row);
-  });
-}
-function renderWinner(pref, course, candidates) {
-  winnerBox.querySelector('.pref').textContent = pref || '-';
-  const courseEl = winnerBox.querySelector('.course');
-  if (!course) {
-    courseEl.textContent = '条件に合う候補がありません';
-    winnerSite.innerHTML = '';
-    winnerMeta.innerHTML = '';
-    winnerText.textContent = 'ブランドや条件を見直して、もう一度回してください。';
-    winnerLinks.innerHTML = '';
-    renderCandidates(candidates || []);
-    return;
-  }
-  courseEl.textContent = course.name;
-  winnerSite.innerHTML = course.isFallback
-    ? `高評価候補一覧: <a href="${course.officialUrl}" target="_blank" rel="noopener noreferrer">県別の3.8以上候補を見る</a>`
-    : `公式サイト: <a href="${course.site}" target="_blank" rel="noopener noreferrer">${course.site}</a>`;
-  winnerMeta.innerHTML = `<span class="pill brand">${course.brand}</span><span class="pill score">快適度 ${course.comfort}</span><span class="pill dist">${course.capital}から約${course.distanceKm}km</span><span class="pill">評価 ${course.rating.toFixed(1)}</span><span class="pill">${REGION_BY_PREF[pref]}</span>`;
-  winnerText.textContent = course.isFallback ? `${seasonName(getSeason())}向き / 県別の高評価候補一覧へ進みます / 県庁所在地は${course.capital}` : `${seasonName(getSeason())}向き / ${course.conditions.join(' / ') || '条件情報なし'} / 県庁所在地は${course.capital}`;
-  const links = linksForCourse(course);
-  winnerLinks.innerHTML = `<a class="linkbtn primary" href="${links.booking}" target="_blank" rel="noopener noreferrer">公式サイトへ</a><a class="linkbtn" href="${links.maps}" target="_blank" rel="noopener noreferrer">Google Maps</a><a class="linkbtn" href="${links.search}" target="_blank" rel="noopener noreferrer">コース検索</a>`;
-  renderCandidates(candidates, course.id);
-}
-function chooseCourseFromCandidates(candidates) {
-  if (!candidates.length) return null;
-  const real = candidates.filter(c => !c.isFallback);
-  const pool = (real.length ? real : candidates).slice(0, Math.min(8, real.length ? real.length : candidates.length));
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-function renderForPref(pref, pickWinner=true) { currentPref = pref; const candidates = getEligibleCourses(pref); renderWinner(pref, pickWinner ? chooseCourseFromCandidates(candidates) : null, candidates); }
-async function spinRoulette() {
-  if (spinRunning) return; spinRunning = true; spinBtn.disabled = true; rerollBtn.disabled = true;
-  seasonLabel.textContent = `季節: ${seasonName(getSeason())}`; areaLabel.textContent = `エリア: ${AREA_LABELS[areaSelect.value]}`;
-  const winnerPref = pickWinnerPref(); await animateToPref(winnerPref); currentPref = winnerPref;
-  const candidates = getEligibleCourses(winnerPref); renderWinner(winnerPref, chooseCourseFromCandidates(candidates), candidates);
-  spinRunning = false; spinBtn.disabled = false; rerollBtn.disabled = false;
-}
-function rerollSamePref() { if (!currentPref) return; const candidates = getEligibleCourses(currentPref); renderWinner(currentPref, chooseCourseFromCandidates(candidates), candidates); statusLabel.textContent = `同じ県で再抽選: ${currentPref}`; }
+async function eligiblePrefs(){ const prefs=AREA_PREFS[document.getElementById('area').value]; const result=[]; for(const pref of prefs){ try{ const list=await fetchCoursesForPref(pref); if(list.length) result.push(pref); }catch(e){} } return result; }
 
-buildChips(brandChips, BRANDS, activeBrands); buildChips(conditionChips, CONDITIONS, activeConditions); renderChipStates();
-seasonLabel.textContent = `季節: ${seasonName(getSeason())}`; areaLabel.textContent = `エリア: ${AREA_LABELS[areaSelect.value]}`; statusLabel.textContent = '待機中';
-const initialItems = makeTickerList(PREFS, '東京都'); renderTicker(initialItems); const initialIndex = initialItems.lastIndexOf('東京都'); const initialY = (CONTAINER_H / 2) - (ITEM_H / 2) - (initialIndex * ITEM_H); ticker.style.transform = `translateY(${initialY}px)`; renderWinner('-', null, []);
-spinBtn.addEventListener('click', spinRoulette); rerollBtn.addEventListener('click', rerollSamePref);
-seasonSelect.addEventListener('change', () => { seasonLabel.textContent = `季節: ${seasonName(getSeason())}`; if (currentPref) renderForPref(currentPref, true); });
-areaSelect.addEventListener('change', () => { areaLabel.textContent = `エリア: ${AREA_LABELS[areaSelect.value]}`; statusLabel.textContent = '待機中'; currentPref = null; const prefs = filteredPrefs(); const items = makeTickerList(prefs, prefs[0]); renderTicker(items); const idx = items.lastIndexOf(prefs[0]); const y = (CONTAINER_H / 2) - (ITEM_H / 2) - (idx * ITEM_H); ticker.style.transform = `translateY(${y}px)`; renderWinner('-', null, []); });
+const ticker=document.getElementById('ticker'); const ITEM_H=72, BOX_H=240;
+function renderTicker(items){ ticker.innerHTML=''; items.forEach(name=>{ const div=document.createElement('div'); div.className='item'; div.textContent=name; ticker.appendChild(div); }); }
+function makeTickerItems(prefs,winner){ const rep=[]; for(let i=0;i<6;i++) rep.push(...prefs); rep.push(winner); return [...rep, ...prefs.slice(0,8)]; }
+function chooseOne(list){ if(!list.length) return null; const top=list.slice(0, Math.min(10,list.length)); return top[Math.floor(Math.random()*top.length)]; }
+function renderCandidates(list, pickedId){ const box=document.getElementById('candidateList'); box.innerHTML=''; if(!list.length){ box.innerHTML='<div class="subline">条件に合う候補がありません。</div>'; return; } list.forEach(c=>{ const row=document.createElement('div'); row.className='row'; row.innerHTML=`<div class="name">${c.golfCourseId===pickedId?'★ ':''}${escapeHtml(c.name)}</div><div class="subline">${escapeHtml(c.brand)} / 快適度 ${c.comfort} / 評価 ${Number(c.evaluation||0).toFixed(1)}</div><div class="subline">${escapeHtml(c.address||'')}</div><div class="subline"><a href="${c.detailUrl}" target="_blank" rel="noopener noreferrer" style="color:#93c5fd">詳細</a> &nbsp;/&nbsp; <a href="${c.reserveUrl}" target="_blank" rel="noopener noreferrer" style="color:#93c5fd">予約カレンダー</a></div>`; box.appendChild(row); }); }
+function renderWinner(pref, picked, list){ document.getElementById('winPref').textContent=pref||'-'; if(!picked){ document.getElementById('winCourse').textContent='候補がありません'; document.getElementById('winDesc').textContent='ブランドやサーバー設定を確認してください。'; document.getElementById('winMeta').innerHTML=''; document.getElementById('winLinks').innerHTML=''; renderCandidates([]); return; } document.getElementById('winCourse').textContent=picked.name; document.getElementById('winDesc').textContent=picked.address || picked.caption || `${pref} の候補です。`; document.getElementById('winMeta').innerHTML=`<span class="pill">${picked.brand}</span><span class="pill">快適度 ${picked.comfort}</span><span class="pill">評価 ${Number(picked.evaluation||0).toFixed(1)}</span>`; document.getElementById('winLinks').innerHTML=`<a class="pri" href="${picked.detailUrl}" target="_blank" rel="noopener noreferrer">ゴルフ場詳細</a><a href="${picked.reserveUrl}" target="_blank" rel="noopener noreferrer">予約カレンダー</a>`; renderCandidates(list, picked.golfCourseId); }
+
+async function spin(){
+  try{
+    document.getElementById('seasonLabel').textContent=`季節: ${seasonLabelText(currentSeason())}`;
+    document.getElementById('areaLabel').textContent=`エリア: ${AREA_LABELS[document.getElementById('area').value]}`;
+    document.getElementById('statusLabel').textContent='候補を取得中';
+    setStatus('warn','<div>サーバー側から楽天GORA APIに問い合わせています。少し待ってください。</div>');
+    const prefs=await eligiblePrefs();
+    if(!prefs.length) throw new Error('候補が見つかりませんでした。環境変数かブランド選択を確認してください。');
+    const winner=prefs[Math.floor(Math.random()*prefs.length)];
+    const items=makeTickerItems(prefs,winner); renderTicker(items);
+    const idx=items.lastIndexOf(winner); const targetY=(BOX_H/2)-(ITEM_H/2)-(idx*ITEM_H);
+    await new Promise(resolve=>{ const start=performance.now(), dur=3200; const easeOutCubic=t=>1-Math.pow(1-t,3); function frame(now){ const p=Math.min(1,(now-start)/dur); const y=targetY*easeOutCubic(p); ticker.style.transform=`translateY(${y}px)`; if(p<1) requestAnimationFrame(frame); else resolve(); } requestAnimationFrame(frame); });
+    document.getElementById('statusLabel').textContent=`決定: ${winner}`; lastPref=winner;
+    const list=await fetchCoursesForPref(winner); const picked=chooseOne(list); renderWinner(winner,picked,list);
+    setStatus('ok','<div>候補名・評価・詳細URL・予約URLはサーバー側経由で取得しています。</div>');
+  }catch(e){
+    document.getElementById('statusLabel').textContent='エラー';
+    setStatus('error', `<div>${escapeHtml(e.message||'エラーが発生しました。')}</div>`);
+  }
+}
+async function reroll(){ if(!lastPref) return; try{ document.getElementById('statusLabel').textContent=`再抽選: ${lastPref}`; const list=await fetchCoursesForPref(lastPref); const picked=chooseOne(list); renderWinner(lastPref,picked,list); }catch(e){ setStatus('error', `<div>${escapeHtml(e.message||'エラーが発生しました。')}</div>`); } }
+
+document.getElementById('spinBtn').onclick=spin;
+document.getElementById('rerollBtn').onclick=reroll;
+document.getElementById('season').onchange=()=>{ document.getElementById('seasonLabel').textContent=`季節: ${seasonLabelText(currentSeason())}`; cache.clear(); };
+document.getElementById('area').onchange=()=>{ document.getElementById('areaLabel').textContent=`エリア: ${AREA_LABELS[document.getElementById('area').value]}`; lastPref=null; };
+document.getElementById('seasonLabel').textContent=`季節: ${seasonLabelText(currentSeason())}`;
+document.getElementById('areaLabel').textContent=`エリア: ${AREA_LABELS[document.getElementById('area').value]}`;
+const bootItems=makeTickerItems(AREA_PREFS.all,'東京都'); renderTicker(bootItems); const idx0=bootItems.lastIndexOf('東京都'); ticker.style.transform=`translateY(${(BOX_H/2)-(ITEM_H/2)-(idx0*ITEM_H)}px)`;
 </script>
 </body>
 </html>
